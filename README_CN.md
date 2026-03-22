@@ -1,6 +1,5 @@
-<p align="center">
-  <img src="docs/screenshots/logo.png" alt="ClawGrowth Logo" width="120">
-</p>
+
+
 
 <h1 align="center">🦞 ClawGrowth</h1>
 
@@ -26,7 +25,7 @@
 
 ## 🎯 什么是 ClawGrowth？
 
-ClawGrowth 是一个为 [OpenClaw](https://github.com/anthropics/openclaw) Agent 设计的**游戏化指标看板**。它将原始的 Agent 数据转化为有意义的可视化图表，帮助你了解 AI Agent 的工作状态、成长轨迹和协作关系。
+ClawGrowth 是一个为 [OpenClaw](https://github.com/openclaw/openclaw) Agent 设计的**游戏化指标看板**。它将原始的 Agent 数据转化为有意义的可视化图表，帮助你了解 AI Agent 的工作状态、成长轨迹和协作关系。
 
 可以把它想象成 **AI Agent 的健身追踪器** — 监控健康状态、追踪成长进度、庆祝每一个成就。
 
@@ -118,7 +117,7 @@ ClawGrowth 是一个为 [OpenClaw](https://github.com/anthropics/openclaw) Agent
 ### 步骤 1：克隆仓库
 
 ```bash
-git clone https://github.com/anthropics/clawgrowth.git
+git clone https://github.com/deepquest-ai/clawgrowth
 cd clawgrowth
 ```
 
@@ -447,6 +446,7 @@ ClawGrowth/
 
 <p align="center">
   <img src="docs/screenshots/wechat-qr.png" alt="微信二维码" width="200">
+  <img src="docs/screenshots/wechat-mp.png" alt="微信公众号" width="200">
 </p>
 
 ---

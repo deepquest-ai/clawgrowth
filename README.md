@@ -1,11 +1,9 @@
-<p align="center">
-  <img src="docs/screenshots/logo.png" alt="ClawGrowth Logo" width="120">
-</p>
+
 
 <h1 align="center">🦞 ClawGrowth</h1>
 
 <p align="center">
-  <strong>OpenClaw Agent Growth & Metrics Dashboard</strong>
+  <strong>OpenClaw Agent Growth Metrics Dashboard</strong>
 </p>
 
 <p align="center">
@@ -26,9 +24,9 @@
 
 ## 🎯 What is ClawGrowth?
 
-ClawGrowth is a **claw growth metrics dashboard** for [OpenClaw](https://github.com/anthropics/openclaw) agents. It transforms raw agent data into meaningful visualizations, helping you understand how your AI agents work, grow, and collaborate.
+ClawGrowth is a **gamified metrics dashboard** designed for [OpenClaw](https://github.com/openclaw/openclaw) agents. It transforms raw agent data into meaningful visualizations, helping you understand how your AI agents work, their growth trajectory, and collaboration relationships.
 
-Think of it as a **growth tracker for your AI agents** — monitoring their health, tracking their progress, and celebrating their achievements.
+Think of it as a **fitness tracker for your AI agents** — monitoring their health, tracking their progress, and celebrating every achievement.
 
 ---
 
@@ -41,18 +39,18 @@ Think of it as a **growth tracker for your AI agents** — monitoring their heal
 
 ### 🎮 Gamification System
 - **XP & Levels** — Earn experience from conversations, tool usage, and more
-- **5 Growth Stages** — Baby → Growing → Mature → Expert → Legend
+- **5 Growth Stages** — Seedling → Growing → Mature → Expert → Legend
 - **5 Color Tiers** — Purple → Blue → Teal → Orange → Red
-- **Achievements** — Unlock milestones as agents progress
+- **Achievements** — Unlock milestone achievements as agents progress
 
 ### 📈 Five-Dimension Scoring
 | Dimension | Weight | Measures |
 |-----------|--------|----------|
-| Efficiency | 25% | Token efficiency, cache usage, response speed |
-| Output | 25% | Token output, tool calls, conversations |
+| Efficiency | 25% | Token efficiency, cache hits, response speed |
+| Output | 25% | Token output, tool calls, conversation rounds |
 | Automation | 20% | Cron execution volume and success rate |
-| Collaboration | 15% | Multi-agent interactions |
-| Accumulation | 15% | Skills, memories, learnings |
+| Collaboration | 15% | Multi-claw interactions |
+| Accumulation | 15% | Skills, memories, learning records |
 
 ### 🏥 Four-Status Monitoring
 - **Energy** — Context capacity and freshness
@@ -67,7 +65,7 @@ Think of it as a **growth tracker for your AI agents** — monitoring their heal
 - Workspace completeness metrics
 
 ### 🤝 Collaboration Network
-- Visualize agent-to-agent interactions
+- Visualize claw-to-claw interactions
 - Track collaboration patterns
 - Monitor shared workspace activity
 
@@ -111,14 +109,14 @@ Think of it as a **growth tracker for your AI agents** — monitoring their heal
 | Component | Minimum | Recommended | Notes |
 |-----------|---------|-------------|-------|
 | Python | 3.6+ | 3.9+ | Backend runtime |
-| pip | 19.0+ | Latest | Package manager |
-| Node.js | - | - | Not required (static frontend) |
-| OpenClaw | - | Latest | The agent system to monitor |
+| pip | 19.0+ | Latest | Python package manager |
+| Node.js | - | - | Not required (pure static frontend) |
+| OpenClaw | - | Latest | The claw system being monitored |
 
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/anthropics/clawgrowth.git
+git clone https://github.com/deepquest-ai/clawgrowth
 cd clawgrowth
 ```
 
@@ -260,7 +258,7 @@ python3 app.py
 python3 -m http.server 8081
 ```
 
-#### Q: No agent data visible?
+#### Q: No claw data visible?
 **A**: Verify OpenClaw directory is correctly configured:
 ```bash
 export CLAWGROWTH_OPENCLAW_ROOT=~/.openclaw
@@ -268,7 +266,7 @@ python3 app.py
 ```
 
 #### Q: How to change default password?
-**A**: Login → Settings → Change Password, or delete `backend/data/config.json` to reset.
+**A**: Login → Settings → Change Password, or delete `backend/data/config.json` to reset to default password.
 
 ---
 
@@ -302,7 +300,7 @@ Edit `config.json`:
 }
 ```
 
-> ⚠️ **Important**: `openclaw_root` must point to your OpenClaw installation directory, otherwise agent data cannot be read!
+> ⚠️ **Important**: `openclaw_root` must point to your OpenClaw installation directory, otherwise claw data cannot be read!
 
 **Common configuration examples:**
 
@@ -381,7 +379,7 @@ Change password:
 
 ## 📖 Documentation
 
-- [Algorithm Rules](docs/en/algorithm-rules.md) — Scoring formulas and calculations
+- [Algorithm Rules](docs/en/algorithm-rules.md) — Scoring formulas and calculation logic
 - [Database Design](docs/en/database-design.md) — Schema and data flow
 - [API Reference](docs/en/api-reference.md) — Full API documentation
 
@@ -447,6 +445,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <p align="center">
   <img src="docs/screenshots/wechat-qr.png" alt="WeChat QR" width="200">
+  <img src="docs/screenshots/wechat-mp.png" alt="WeChat Official Account" width="200">
 </p>
 
 ---
