@@ -1,0 +1,19 @@
+{
+  "_comment": "ClawGrowth Configuration File",
+  "_doc": "Copy this file to config.json and customize. Environment variables override these settings.",
+  
+  "openclaw_root": "~/.openclaw",
+  "db_path": "",
+  "host": "0.0.0.0",
+  "port": 57178,
+  "frontend_port": 57177,
+  "default_agent": "main",
+  
+  "scheduler_enabled": true,
+  "collect_hourly": true,
+  "cleanup_hour": 3,
+  "tool_retention_days": 7,
+  "cron_retention_days": 30,
+  
+  "password_hash": ""
+}

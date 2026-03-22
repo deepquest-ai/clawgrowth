@@ -1,0 +1,2778 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClawGrowth</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <!-- Version: 1774081236 -->
+  <!-- Auto-load config.js if exists (for custom API_BASE) -->
+  <script src="config.js" onerror="this.remove()"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://registry.npmmirror.com/echarts/5.4.3/files/dist/echarts.min.js"></script>
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       DESIGN SYSTEM - Professional Dark Theme
+       ═══════════════════════════════════════════════════════════ */
+    
+    :root {
+      /* Primary palette */
+      --primary-50: #eef2ff;
+      --primary-100: #e0e7ff;
+      --primary-200: #c7d2fe;
+      --primary-300: #a5b4fc;
+      --primary-400: #818cf8;
+      --primary-500: #6366f1;
+      --primary-600: #4f46e5;
+      --primary-700: #4338ca;
+      
+      /* Accent colors */
+      --accent-cyan: #22d3ee;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      
+      /* Background layers */
+      --bg-base: #0a0a0f;
+      --bg-surface: #12121a;
+      --bg-elevated: #1a1a24;
+      --bg-overlay: #22222e;
+      
+      /* Border & divider */
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-default: rgba(255,255,255,0.1);
+      --border-emphasis: rgba(99,102,241,0.4);
+      
+      /* Text */
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+      --shadow-glow: 0 0 40px rgba(99,102,241,0.15);
+    }
+    
+    * { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Dark theme base with subtle noise texture */
+    body { 
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139,92,246,0.1), transparent),
+        linear-gradient(180deg, var(--bg-base) 0%, #0d0d14 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       GLASS MORPHISM - Refined
+       ═══════════════════════════════════════════════════════════ */
+    .glass { 
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    
+    .glass-dark { 
+      background: linear-gradient(145deg, rgba(18,18,26,0.9) 0%, rgba(26,26,36,0.8) 100%);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border-default);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       CARD SYSTEM - Modern & Clean
+       ═══════════════════════════════════════════════════════════ */
+    .card {
+      background: linear-gradient(165deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    
+    .card:hover {
+      border-color: var(--border-emphasis);
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+      transform: translateY(-4px);
+    }
+    
+    .card:hover::before {
+      opacity: 1;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════
+       GRADIENT TEXT - Vibrant
+       ═══════════════════════════════════════════════════════════ */
+    .stat-value { 
+      background: linear-gradient(135deg, #fff 0%, var(--primary-300) 100%); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .stat-value-green { 
+      background: linear-gradient(135deg, #6ee7b7 0%, var(--accent-emerald) 100%); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+    }
+    .stat-value-blue { 
+      background: linear-gradient(135deg, #67e8f9 0%, var(--accent-cyan) 100%); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+    }
+    .stat-value-purple { 
+      background: linear-gradient(135deg, #c4b5fd 0%, var(--primary-400) 100%); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+    }
+    .stat-value-orange { 
+      background: linear-gradient(135deg, #fde68a 0%, var(--accent-amber) 100%); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PAGE TRANSITIONS
+       ═══════════════════════════════════════════════════════════ */
+    .page { display: none; }
+    .page.active { 
+      display: block; 
+      animation: pageEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    @keyframes pageEnter { 
+      from { opacity: 0; transform: translateY(20px) scale(0.98); } 
+      to { opacity: 1; transform: translateY(0) scale(1); } 
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       NAVIGATION - Sleek Sidebar
+       ═══════════════════════════════════════════════════════════ */
+    .nav-item { 
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      color: var(--text-secondary);
+      position: relative;
+      border-radius: 12px;
+      margin: 2px 0;
+    }
+    
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 3px;
+      height: 24px;
+      background: linear-gradient(180deg, var(--primary-400), var(--primary-600));
+      border-radius: 0 4px 4px 0;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .nav-item.active { 
+      background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.1) 100%);
+      color: #fff;
+      font-weight: 600;
+    }
+    
+    .nav-item.active::before {
+      transform: translateY(-50%) scaleY(1);
+    }
+    
+    .nav-item:hover:not(.active) { 
+      background: rgba(99,102,241,0.1);
+      color: var(--text-primary);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CLAW MASCOT - Enhanced Animations
+       ═══════════════════════════════════════════════════════════ */
+    .claw-glow { animation: clawPulse 3s ease-in-out infinite; }
+    @keyframes clawPulse { 
+      0%, 100% { transform: scale(1); filter: brightness(1); } 
+      50% { transform: scale(1.03); filter: brightness(1.1); } 
+    }
+    
+    .claw-perfect { filter: hue-rotate(0deg) saturate(1.3) drop-shadow(0 0 30px rgba(239,68,68,0.6)); }
+    .claw-good { filter: hue-rotate(-30deg) saturate(1.2) drop-shadow(0 0 25px rgba(251,146,60,0.5)); }
+    .claw-normal { filter: hue-rotate(180deg) saturate(0.9) drop-shadow(0 0 20px rgba(96,165,250,0.4)); }
+    .claw-tired { filter: hue-rotate(220deg) saturate(0.6) drop-shadow(0 0 15px rgba(148,163,184,0.3)); }
+    .claw-danger { filter: hue-rotate(320deg) saturate(1.5) drop-shadow(0 0 35px rgba(239,68,68,0.7)); }
+
+    .claw-happy     { animation: bounce 1.2s ease-in-out infinite; }
+    .claw-energetic { animation: jump 0.6s ease-in-out infinite; }
+    .claw-tired-anim { animation: sway 4s ease-in-out infinite; }
+    .claw-hungry    { animation: shake 0.4s linear infinite; }
+    .claw-sick      { animation: wobble 2.5s ease-in-out infinite; }
+
+    @keyframes bounce  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes jump    { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-14px) scale(1.08)} }
+    @keyframes sway    { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+    @keyframes shake   { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+    @keyframes wobble  { 0%,100%{transform:rotate(-4deg) scale(.96)} 50%{transform:rotate(4deg) scale(.96)} }
+
+    .metric-card { 
+      cursor: pointer; 
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+      border-radius: inherit;
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 0.4s ease;
+    }
+    
+    .metric-card:hover { 
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: var(--shadow-lg), 0 0 60px rgba(99,102,241,0.2);
+    }
+    
+    .metric-card:hover::after {
+      opacity: 0.1;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       STATUS BARS - Refined
+       ═══════════════════════════════════════════════════════════ */
+    .status-row { 
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      margin: -8px -12px;
+      border-radius: 10px;
+    }
+    .status-row:hover { 
+      background: rgba(99,102,241,0.08);
+    }
+    .status-row:hover .status-label { color: var(--primary-300); }
+
+    /* Progress bar with shimmer */
+    .progress-bar { 
+      background: linear-gradient(90deg, var(--primary-500) 0%, var(--primary-400) 50%, var(--primary-500) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s ease-in-out infinite;
+      border-radius: 4px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL - Premium Feel
+       ═══════════════════════════════════════════════════════════ */
+    #modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    #modal-overlay.open { 
+      display: flex;
+      animation: modalBgFade 0.3s ease;
+    }
+    @keyframes modalBgFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    #modal-box {
+      background: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
+      border: 1px solid var(--border-default);
+      border-radius: 24px; 
+      padding: 28px;
+      max-width: 540px; width: 92%; max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6), var(--shadow-glow);
+      color: var(--text-primary);
+      animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes modalSlide {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SCROLLBAR - Minimal
+       ═══════════════════════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { 
+      background: rgba(99,102,241,0.3); 
+      border-radius: 4px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
+
+    /* XP bar with glow */
+    #xpBar { 
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 20px rgba(99,102,241,0.4);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SPINNER - Modern
+       ═══════════════════════════════════════════════════════════ */
+    .spinner {
+      border: 3px solid rgba(99,102,241,0.15);
+      border-top-color: var(--primary-400);
+      border-radius: 50%; width: 32px; height: 32px;
+      animation: spin 0.8s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ═══════════════════════════════════════════════════════════
+       BADGES - Polished
+       ═══════════════════════════════════════════════════════════ */
+    .badge-ok  { 
+      background: rgba(52,211,153,0.15); 
+      color: var(--accent-emerald);
+      border: 1px solid rgba(52,211,153,0.2);
+    }
+    .badge-no  { 
+      background: rgba(251,113,133,0.15); 
+      color: var(--accent-rose);
+      border: 1px solid rgba(251,113,133,0.2);
+    }
+    .badge { 
+      font-size: 0.7rem; 
+      padding: 4px 10px; 
+      border-radius: 999px; 
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       AGENT ROW - Interactive
+       ═══════════════════════════════════════════════════════════ */
+    .agent-row { 
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      margin: 0 -12px;
+      padding: 12px;
+    }
+    .agent-row:hover { 
+      background: linear-gradient(90deg, rgba(99,102,241,0.1), transparent);
+      cursor: pointer;
+      transform: translateX(4px);
+    }
+
+    /* Glow effect */
+    .glow { 
+      box-shadow: 0 0 60px rgba(99,102,241,0.25);
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(99,102,241,0.2); }
+      50% { box-shadow: 0 0 60px rgba(99,102,241,0.35); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FORM ELEMENTS - Refined
+       ═══════════════════════════════════════════════════════════ */
+    select, input[type="text"], input[type="password"] {
+      background: var(--bg-surface) !important;
+      border: 1px solid var(--border-default);
+      color: var(--text-primary) !important;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    select option {
+      background: var(--bg-surface) !important;
+      color: var(--text-primary) !important;
+      padding: 12px;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       TABLE - Clean
+       ═══════════════════════════════════════════════════════════ */
+    table { border-collapse: separate; border-spacing: 0; }
+    th { 
+      color: var(--text-muted); 
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    td { border-bottom: 1px solid var(--border-subtle); }
+    tr:hover td { background: rgba(99,102,241,0.04); }
+
+    /* ═══════════════════════════════════════════════════════════
+       UTILITIES
+       ═══════════════════════════════════════════════════════════ */
+    .hidden { display: none !important; }
+    .text-muted { color: var(--text-secondary); }
+    
+    /* Section headers */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, var(--primary-300) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Subtle divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-default), transparent);
+    }
+    
+    /* Dot indicator */
+    .dot-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    
+    /* Ensure text inherits properly */
+    p, span, div, h1, h2, h3, h4, h5, h6, label, td, th {
+      color: inherit;
+    }
+    
+    /* Button states */
+    button {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    
+    /* Accent line for headers */
+    .accent-line {
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-gray-100">
+
+<!-- ════════════════════════════════════════════════════════════
+     LOGIN PAGE - Premium Design
+═════════════════════════════════════════════════════════════ -->
+<div id="login-page" class="fixed inset-0 flex items-center justify-center z-50" 
+     style="background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99,102,241,0.2), transparent),
+            linear-gradient(180deg, #0a0a0f 0%, #0d0d14 100%);">
+  <!-- Floating particles effect -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl" 
+         style="top: 20%; left: 10%; animation: float 8s ease-in-out infinite;"></div>
+    <div class="absolute w-96 h-96 rounded-full bg-purple-500/10 blur-3xl" 
+         style="bottom: 10%; right: 10%; animation: float 10s ease-in-out infinite reverse;"></div>
+  </div>
+  <style>
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
+  </style>
+  
+  <div class="glass rounded-3xl p-10 w-full max-w-md mx-4 relative" 
+       style="box-shadow: 0 32px 64px rgba(0,0,0,0.5), 0 0 100px rgba(99,102,241,0.1);">
+    <!-- Logo area -->
+    <div class="text-center mb-10">
+      <div class="relative inline-block mb-6">
+        <div class="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full"></div>
+        <div class="relative text-7xl">🦞</div>
+      </div>
+      <h1 class="text-4xl font-bold tracking-tight">
+        <span class="bg-gradient-to-r from-white via-indigo-200 to-purple-300 bg-clip-text text-transparent">
+          ClawGrowth
+        </span>
+      </h1>
+      <p class="text-gray-500 mt-3 text-sm tracking-wide">Agent Growth & Metrics Dashboard</p>
+      
+      <!-- Backend status indicator -->
+      <div id="backend-status" class="mt-4 flex items-center justify-center gap-2 text-sm">
+        <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-500 animate-pulse"></span>
+        <span id="status-text" class="text-gray-500">检测后端服务...</span>
+      </div>
+    </div>
+    
+    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-6">
+      <div class="relative">
+        <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Password</label>
+        <input type="password" id="login-password" required
+               class="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 
+                      focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 
+                      text-white placeholder-gray-500 transition-all duration-300" 
+               placeholder="Enter your password">
+      </div>
+      <div id="login-error" class="text-red-400 text-sm hidden p-3 rounded-lg bg-red-500/10 border border-red-500/20"></div>
+      <button type="submit" id="login-btn"
+              class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold 
+                     hover:from-indigo-500 hover:to-purple-500 transition-all duration-300
+                     shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30
+                     active:scale-[0.98]">
+        Sign In
+      </button>
+    </form>
+    
+    <!-- Version info -->
+    <p class="text-center mt-8 text-gray-600 text-xs">v1.0.0 · Open Source</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODAL
+═════════════════════════════════════════════════════════════ -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-box">
+    <div class="flex items-center justify-between mb-4">
+      <h2 id="modal-title" class="text-lg font-bold text-gray-100"></h2>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-300 text-xl leading-none">&times;</button>
+    </div>
+    <div id="modal-body" class="space-y-4 text-sm text-gray-200"></div>
+    <div class="mt-5 text-right">
+      <button onclick="closeModal()"
+        class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     APP SHELL
+═════════════════════════════════════════════════════════════ -->
+<div id="main-app" class="flex flex-col lg:flex-row min-h-screen hidden">
+
+  <!-- ─────────────── SIDEBAR - Premium Design ─────────────── -->
+  <aside class="lg:w-72 lg:min-h-screen text-white p-4 lg:p-6 flex flex-col gap-4"
+         style="background: linear-gradient(180deg, rgba(18,18,26,0.95) 0%, rgba(10,10,15,0.98) 100%);
+                border-right: 1px solid rgba(255,255,255,0.06);">
+
+    <!-- Claw mascot -->
+    <div class="text-center">
+      <div class="relative w-40 h-40 mx-auto mb-2">
+        <div id="aura" class="aura absolute inset-0 rounded-full bg-white/5/20"></div>
+        <div id="clawWrap" class="absolute inset-0 flex items-center justify-center">
+          <svg id="clawSvg" viewBox="0 0 500 520" class="w-36 h-36">
+            <defs>
+              <radialGradient id="gBody" cx="34%" cy="26%" r="72%">
+                <stop offset="0%"   stop-color="#FFE858"/>
+                <stop offset="36%"  stop-color="#F07020"/>
+                <stop offset="100%" stop-color="#C01808"/>
+              </radialGradient>
+              <radialGradient id="gBelly" cx="50%" cy="36%" r="62%">
+                <stop offset="0%"   stop-color="#FFFAB8"/>
+                <stop offset="100%" stop-color="#FFE878"/>
+              </radialGradient>
+              <radialGradient id="gClawL" cx="30%" cy="25%" r="74%">
+                <stop offset="0%"   stop-color="#F09040"/>
+                <stop offset="50%"  stop-color="#E02808"/>
+                <stop offset="100%" stop-color="#901008"/>
+              </radialGradient>
+              <radialGradient id="gClawR" cx="70%" cy="25%" r="74%">
+                <stop offset="0%"   stop-color="#F09040"/>
+                <stop offset="50%"  stop-color="#E02808"/>
+                <stop offset="100%" stop-color="#901008"/>
+              </radialGradient>
+              <radialGradient id="gEye" cx="25%" cy="18%" r="76%">
+                <stop offset="0%"   stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="#A8D8EE"/>
+              </radialGradient>
+              <radialGradient id="gJoint" cx="40%" cy="30%" r="68%">
+                <stop offset="0%"   stop-color="#F08838"/>
+                <stop offset="100%" stop-color="#C03010"/>
+              </radialGradient>
+            </defs>
+
+            <!-- ═══ TAIL — 6 segments + fan. Body is LEFT (cx=158), tail goes lower-right ═══ -->
+            <!-- Fan petals (drawn first so segments overlap) -->
+            <g stroke="#180603" stroke-width="3.5">
+              <ellipse cx="462" cy="427" rx="20" ry="11" fill="#A81208" transform="rotate( 65 462 427)"/>
+              <ellipse cx="453" cy="438" rx="20" ry="11" fill="#A81208" transform="rotate(  3 453 438)"/>
+              <ellipse cx="441" cy="421" rx="20" ry="11" fill="#A81208" transform="rotate( 86 441 421)"/>
+            </g>
+            <!-- tip→root order so root (seg 1) paints last = on top, connecting to body -->
+            <ellipse cx="450" cy="428" rx="14" ry="9"  fill="#C81808" stroke="#180603" stroke-width="3.5" transform="rotate(54 450 428)"/>
+            <ellipse cx="428" cy="420" rx="22" ry="13" fill="#E03818" stroke="#180603" stroke-width="4"   transform="rotate(47 428 420)"/>
+            <ellipse cx="400" cy="407" rx="32" ry="19" fill="#C81808" stroke="#180603" stroke-width="4"   transform="rotate(39 400 407)"/>
+            <ellipse cx="364" cy="389" rx="44" ry="25" fill="#E03818" stroke="#180603" stroke-width="4.5" transform="rotate(30 364 389)"/>
+            <ellipse cx="318" cy="365" rx="57" ry="32" fill="#C81808" stroke="#180603" stroke-width="5"   transform="rotate(20 318 365)"/>
+            <ellipse cx="258" cy="335" rx="69" ry="38" fill="#E03818" stroke="#180603" stroke-width="5.5" transform="rotate(11 258 335)"/>
+            <!-- Cream stripe highlights on each segment (characteristic crayfish rings) -->
+            <g fill="#FFD878" stroke="none" opacity="0.58">
+              <ellipse cx="450" cy="428" rx="6"  ry="3.5" transform="rotate(54 450 428)"/>
+              <ellipse cx="428" cy="420" rx="10" ry="5.5" transform="rotate(47 428 420)"/>
+              <ellipse cx="400" cy="407" rx="15" ry="8"   transform="rotate(39 400 407)"/>
+              <ellipse cx="364" cy="389" rx="22" ry="11"  transform="rotate(30 364 389)"/>
+              <ellipse cx="318" cy="365" rx="30" ry="14"  transform="rotate(20 318 365)"/>
+              <ellipse cx="258" cy="335" rx="40" ry="18"  transform="rotate(11 258 335)"/>
+            </g>
+
+            <!-- ═══ WALKING LEGS — 3 left, 3 right ═══ -->
+            <g stroke="#180603" stroke-width="4" stroke-linecap="round" fill="none">
+              <path d="M 118 260 L  80 302 L  52 338"/>
+              <path d="M 126 280 L  88 324 L  60 362"/>
+              <path d="M 134 300 L  96 346 L  68 386"/>
+              <path d="M 228 258 L 266 298 L 292 334"/>
+              <path d="M 222 278 L 260 320 L 284 358"/>
+              <path d="M 216 298 L 254 340 L 276 378"/>
+            </g>
+            <g stroke="#E06020" stroke-width="2.5" stroke-linecap="round" fill="none">
+              <path d="M 118 260 L  80 302 L  52 338"/>
+              <path d="M 126 280 L  88 324 L  60 362"/>
+              <path d="M 134 300 L  96 346 L  68 386"/>
+              <path d="M 228 258 L 266 298 L 292 334"/>
+              <path d="M 222 278 L 260 320 L 284 358"/>
+              <path d="M 216 298 L 254 340 L 276 378"/>
+            </g>
+
+            <!-- ═══ LEFT ARM — body shoulder to upper-left claw ═══ -->
+            <path d="M 112 220 C  88 196,  62 168,  44 142"
+                  stroke="#180603" stroke-width="14" stroke-linecap="round" fill="none"/>
+            <path d="M 112 220 C  88 196,  62 168,  44 142"
+                  stroke="#E06020" stroke-width="8"  stroke-linecap="round" fill="none"/>
+
+            <!-- ═══ RIGHT ARM with visible elbow joint ═══ -->
+            <path d="M 232 222 C 258 210, 286 200, 308 196"
+                  stroke="#180603" stroke-width="12" stroke-linecap="round" fill="none"/>
+            <path d="M 232 222 C 258 210, 286 200, 308 196"
+                  stroke="#E06020" stroke-width="7"  stroke-linecap="round" fill="none"/>
+            <ellipse cx="310" cy="195" rx="18" ry="14" fill="url(#gJoint)" stroke="#180603" stroke-width="4.5" transform="rotate(-5 310 195)"/>
+            <path d="M 314 190 C 328 184, 344 179, 358 175"
+                  stroke="#180603" stroke-width="10" stroke-linecap="round" fill="none"/>
+            <path d="M 314 190 C 328 184, 344 179, 358 175"
+                  stroke="#E06020" stroke-width="6"  stroke-linecap="round" fill="none"/>
+
+            <!-- ═══ LEFT CLAW — very large, raised upper-left ═══ -->
+            <g transform="translate(2,34) rotate(-58,70,80)">
+              <ellipse cx="70" cy="80" rx="78" ry="56" fill="url(#gClawL)" stroke="#180603" stroke-width="5.5"/>
+              <path d="M 20 36 C -2  8, -22 -22, -36 -58 C -50 -94, -32 -112, -4 -98
+                       C 24 -84, 40 -50, 44 -12 C 48  20,  44  48,  36  60 Z"
+                    fill="url(#gClawL)" stroke="#180603" stroke-width="5"/>
+              <path d="M -20 -78 C -6 -64,  2 -48, -14 -38" stroke="#180603" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+              <path d="M  -2 -96 C 12 -80, 18 -62,   2 -52" stroke="#180603" stroke-width="4"   fill="none" stroke-linecap="round"/>
+              <path d="M 22 132 C  0 150, -26 158, -46 150 C -66 142, -68 122, -50 112
+                       C -32 102, -4 108, 18 124 Z"
+                    fill="#981008" stroke="#180603" stroke-width="5"/>
+              <path d="M -32 144 C -18 132, -8 122, -24 112" stroke="#180603" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <ellipse cx="48" cy="58" rx="28" ry="18" fill="#F8A060" opacity="0.42" transform="rotate(-24 48 58)" stroke="none"/>
+              <ellipse cx="88" cy="32" rx="15" ry="10" fill="#F8A060" opacity="0.35" transform="rotate(-16 88 32)" stroke="none"/>
+            </g>
+
+            <!-- ═══ RIGHT CLAW — large, forward-right ═══ -->
+            <g transform="translate(294,64) rotate(22,70,80)">
+              <ellipse cx="70" cy="80" rx="74" ry="54" fill="url(#gClawR)" stroke="#180603" stroke-width="5.5"/>
+              <path d="M 120 36 C 142  8, 162 -22, 176 -58 C 190 -94, 172 -112, 144 -98
+                       C 116 -84, 100 -50,  96 -12 C  92  20,  96  48, 104  60 Z"
+                    fill="url(#gClawR)" stroke="#180603" stroke-width="5"/>
+              <path d="M 160 -78 C 146 -64, 138 -48, 154 -38" stroke="#180603" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+              <path d="M 142 -96 C 128 -80, 122 -62, 138 -52" stroke="#180603" stroke-width="4"   fill="none" stroke-linecap="round"/>
+              <path d="M 118 132 C 140 150, 166 158, 186 150 C 206 142, 208 122, 190 112
+                       C 172 102, 144 108, 122 124 Z"
+                    fill="#981008" stroke="#180603" stroke-width="5"/>
+              <path d="M 172 144 C 158 132, 148 122, 164 112" stroke="#180603" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <ellipse cx="92" cy="58" rx="28" ry="18" fill="#F8A060" opacity="0.42" transform="rotate(24 92 58)" stroke="none"/>
+              <ellipse cx="52" cy="32" rx="15" ry="10" fill="#F8A060" opacity="0.35" transform="rotate(16 52 32)" stroke="none"/>
+            </g>
+
+            <!-- ═══ CARAPACE body — shifted LEFT so tail is fully exposed ═══ -->
+            <!-- Body right edge at x≈238; tail seg-1 at cx=258 → tail clearly visible -->
+            <ellipse id="bodyOuter" cx="158" cy="248" rx="80" ry="106" fill="url(#gBody)" stroke="#180603" stroke-width="5.5"/>
+            <!-- Large cream belly highlight -->
+            <ellipse id="bodyInner" cx="158" cy="266" rx="52" ry="76"  fill="url(#gBelly)" opacity="0.62" stroke="none"/>
+            <!-- Freckle dots -->
+            <circle cx="196" cy="242" r="5.5" fill="#C83010" opacity="0.28" stroke="none"/>
+            <circle cx="204" cy="260" r="4"   fill="#C83010" opacity="0.24" stroke="none"/>
+
+            <!-- ═══ HEAD — overlapping top of body ═══ -->
+            <circle id="headOuter" cx="160" cy="168" r="74" fill="url(#gBody)" stroke="#180603" stroke-width="5.5"/>
+            <ellipse id="headInner" cx="140" cy="144" rx="34" ry="28" fill="#FFE858" opacity="0.40" stroke="none"/>
+
+            <!-- ═══ HEAD HORN (tall single flame) ═══ -->
+            <path d="M 162 94 C 154 70, 147 46, 143 22 C 152 40, 163 66, 168 92 Z"
+                  fill="#C81808" stroke="#180603" stroke-width="4"/>
+            <path d="M 162 96 C 156 74, 151 50, 148 32 C 155 48, 163 70, 166 94 Z"
+                  fill="#FF8820" opacity="0.75" stroke="none"/>
+
+            <!-- ═══ ANTENNAE (long, whip-like) ═══ -->
+            <path d="M 146 100 C 122 72, 94 46, 62 20"  stroke="#180603" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M 146 100 C 122 72, 94 46, 62 20"  stroke="#D04010" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M 178 98  C 204 70, 230 44, 258 18" stroke="#180603" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M 178 98  C 204 70, 230 44, 258 18" stroke="#D04010" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+            <!-- ═══ EYES (large, cute) ═══ -->
+            <circle cx="132" cy="163" r="32" fill="url(#gEye)" stroke="#180603" stroke-width="5.5"/>
+            <circle id="eyeLeft"  cx="134" cy="167" r="16" fill="#181818"/>
+            <circle cx="125"      cy="156" r="8"   fill="#FFFFFF"/>
+            <circle cx="142"      cy="178" r="4"   fill="#FFFFFF" opacity="0.75"/>
+            <circle cx="192" cy="159" r="32" fill="url(#gEye)" stroke="#180603" stroke-width="5.5"/>
+            <circle id="eyeRight" cx="190" cy="163" r="16" fill="#181818"/>
+            <circle cx="181"      cy="152" r="8"   fill="#FFFFFF"/>
+            <circle cx="198"      cy="174" r="4"   fill="#FFFFFF" opacity="0.75"/>
+
+            <!-- ═══ MOUTH (open smile) ═══ -->
+            <path id="mouth"
+                  d="M 136 197 Q 162 222 190 197"
+                  stroke="#180603" stroke-width="5.5" fill="#180603" stroke-linejoin="round"/>
+            <path id="mouthCavity"
+                  d="M 138 202 Q 162 218 188 202 Q 180 234 162 236 Q 144 234 138 202 Z"
+                  fill="#C01808"/>
+            <path d="M 143 202 Q 162 216 185 202 L 182 213 Q 162 227 144 213 Z" fill="#FFFFFF"/>
+
+            <!-- ═══ BLUSH ═══ -->
+            <ellipse cx="112" cy="192" rx="18" ry="11" fill="#FF7060" opacity="0.42" stroke="none"/>
+            <ellipse cx="212" cy="187" rx="18" ry="11" fill="#FF7060" opacity="0.42" stroke="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold">
+        Claw LV.<span id="level">1</span>
+      </div>
+      <div id="stageText" class="text-sm opacity-80">-</div>
+      <div class="text-xs opacity-70 mt-1">
+        XP: <span id="xp">0</span> / <span id="nextXp">100</span>
+      </div>
+      <div class="w-full bg-white/5/30 rounded-full h-2 mt-1">
+        <div id="xpBar" class="bg-yellow-400 h-2 rounded-full" style="width:0%"></div>
+      </div>
+      <!-- Color badge -->
+      <div id="colorBadge" class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold text-white"
+           style="background:#9B5DE5">-</div>
+    </div>
+
+    <!-- Agent selector -->
+    <div>
+      <select id="agentSelect"
+        class="w-full bg-white/5/20 text-white rounded-lg px-3 py-2 text-sm border border-white/30 outline-none">
+        <option value="coding-assistant">coding-assistant</option>
+      </select>
+    </div>
+
+    <!-- Status bars (clickable) -->
+    <div class="glass rounded-xl p-3 text-sm space-y-2 text-gray-100">
+      <div class="status-row" onclick="showStatusModal('energy')">
+        <div class="flex justify-between items-center">
+          <span class="status-label font-medium" data-i18n="energy">Energy</span>
+          <span id="energyText" class="text-xs text-gray-400">0%</span>
+        </div>
+        <div class="bg-gray-200 h-1.5 rounded-full mt-1">
+          <div id="energyBar" class="bg-green-500/100 h-1.5 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="status-row" onclick="showStatusModal('health')">
+        <div class="flex justify-between items-center">
+          <span class="status-label font-medium" data-i18n="health">Health</span>
+          <span id="healthText" class="text-xs text-gray-400">0%</span>
+        </div>
+        <div class="bg-gray-200 h-1.5 rounded-full mt-1">
+          <div id="healthBar" class="bg-red-500/100 h-1.5 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="status-row" onclick="showStatusModal('mood')">
+        <div class="flex justify-between items-center">
+          <span class="status-label font-medium" data-i18n="mood">Mood</span>
+          <span id="moodText" class="text-xs text-gray-400">0%</span>
+        </div>
+        <div class="bg-gray-200 h-1.5 rounded-full mt-1">
+          <div id="moodBar" class="bg-pink-500/100 h-1.5 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="status-row" onclick="showStatusModal('hunger')">
+        <div class="flex justify-between items-center">
+          <span class="status-label font-medium" data-i18n="hunger">Hunger</span>
+          <span id="hungerText" class="text-xs text-gray-400">0%</span>
+        </div>
+        <div class="bg-gray-200 h-1.5 rounded-full mt-1">
+          <div id="hungerBar" class="bg-orange-500/100 h-1.5 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible flex-wrap">
+      <button class="nav-item active flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('home',this)" data-i18n="home">Home</button>
+      <button class="nav-item flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('tools',this)" data-i18n="tools">Tools</button>
+      <button class="nav-item flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('automation',this)" data-i18n="automation">Automation</button>
+      <button class="nav-item flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('agents',this)" data-i18n="agents">Agents</button>
+      <button class="nav-item flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('growth',this)" data-i18n="growth">Growth</button>
+      <button class="nav-item flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('workspace',this)" data-i18n="workspace">Workspace</button>
+      <button class="nav-item flex-1 lg:flex-none px-3 py-2 rounded-lg text-left text-sm"
+              onclick="showPage('settings',this)" data-i18n="settings">Settings</button>
+    </nav>
+
+    <!-- Language toggle + Logout -->
+    <div class="mt-auto pt-4 space-y-3">
+      <div class="divider"></div>
+      <div class="flex gap-2">
+        <button id="langToggle" onclick="toggleLang()"
+          class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-medium transition
+                 border border-white/5 hover:border-white/10">
+          🌐 ZH / EN
+        </button>
+        <button onclick="handleLogout()"
+          class="px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-medium transition
+                 border border-red-500/20 hover:border-red-500/30"
+          data-i18n="logout">Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─────────────── MAIN CONTENT ─────────────── -->
+  <main class="flex-1 p-4 lg:p-6 overflow-y-auto space-y-6">
+
+    <!-- Loading / Error banners -->
+    <div id="loadingBanner" class="glass rounded-xl p-4 flex items-center gap-3">
+      <div class="spinner"></div>
+      <span data-i18n="loading">Loading...</span>
+    </div>
+    <div id="errorBanner" class="hidden glass rounded-xl p-4 text-red-600 font-medium"></div>
+
+    <!-- ══════════ PAGE: HOME ══════════ -->
+    <section id="page-home" class="page active space-y-6">
+      <h1 class="section-title" data-i18n="home_title">Today's Overview</h1>
+
+      <!-- Stat cards row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass rounded-xl p-4 metric-card"
+             onclick="showScoreModal('tool_calls_today')">
+          <div id="hToolCalls" class="text-2xl font-bold text-purple-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="tool_calls">Tool Calls</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="click_for_detail">Click for details</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card"
+             onclick="showScoreModal('tokens_today')">
+          <div id="hTokens" class="text-2xl font-bold text-blue-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="input_tokens">Tokens</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="click_for_detail">Click for details</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card"
+             onclick="showScoreModal('cron_today')">
+          <div id="hCronRuns" class="text-2xl font-bold text-green-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_runs">Cron Runs</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="click_for_detail">Click for details</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card"
+             onclick="showScoreModal('xp_today')">
+          <div id="hXpGained" class="text-2xl font-bold text-orange-400">+0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="xp">XP Gained</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="click_for_detail">Click for details</div>
+        </div>
+      </div>
+
+      <!-- Radar + Pie -->
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="glass rounded-xl p-4">
+          <h3 class="font-semibold mb-3 text-gray-200" data-i18n="five_dimensions">Five Dimensions</h3>
+          <div id="radarChart" class="h-72"></div>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <h3 class="font-semibold mb-3 text-gray-200" data-i18n="tool_distribution">Tool Distribution</h3>
+          <div id="pieChart" class="h-72"></div>
+        </div>
+      </div>
+
+      <!-- Derived metrics row -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="derived_metrics">Derived Metrics</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div class="metric-card rounded-lg bg-indigo-500/10 p-3"
+               onclick="showScoreModal('token_efficiency')">
+            <div id="dTokenEff" class="text-xl font-bold text-indigo-400">-</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="token_efficiency">Token Efficiency</div>
+          </div>
+          <div class="metric-card rounded-lg bg-cyan-500/10 p-3"
+               onclick="showScoreModal('cache_hit_rate')">
+            <div id="dCacheHit" class="text-xl font-bold text-cyan-400">-</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="cache_hit_rate">Cache Hit Rate</div>
+          </div>
+          <div class="metric-card rounded-lg bg-red-500/10 p-3"
+               onclick="showScoreModal('tool_error_rate')">
+            <div id="dToolErr" class="text-xl font-bold text-red-400">-</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="tool_error_rate">Tool Error Rate</div>
+          </div>
+          <div class="metric-card rounded-lg bg-green-500/10 p-3"
+               onclick="showScoreModal('tool_diversity')">
+            <div id="dDiversity" class="text-xl font-bold text-green-400">-</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="tool_diversity">Tool Diversity</div>
+          </div>
+          <div class="metric-card rounded-lg bg-purple-500/10 p-3"
+               onclick="showScoreModal('context_usage')">
+            <div id="dContextUsage" class="text-xl font-bold text-purple-400">-</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="context_usage">Context Usage</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score cards row -->
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('efficiency')">
+          <div id="sEfficiency" class="text-2xl font-bold text-indigo-400">-</div>
+          <div class="text-sm font-medium text-gray-200 mt-1" data-i18n="efficiency">Efficiency</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="efficiency_desc">-</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('output')">
+          <div id="sOutput" class="text-2xl font-bold text-blue-400">-</div>
+          <div class="text-sm font-medium text-gray-200 mt-1" data-i18n="output">Output</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="output_desc">-</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('automation')">
+          <div id="sAutomation" class="text-2xl font-bold text-green-400">-</div>
+          <div class="text-sm font-medium text-gray-200 mt-1" data-i18n="automation">Automation</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="automation_desc">-</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('collaboration')">
+          <div id="sCollab" class="text-2xl font-bold text-orange-400">-</div>
+          <div class="text-sm font-medium text-gray-200 mt-1" data-i18n="collaboration">Collaboration</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="collaboration_desc">-</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('accumulation')">
+          <div id="sAccum" class="text-2xl font-bold text-pink-400">-</div>
+          <div class="text-sm font-medium text-gray-200 mt-1" data-i18n="accumulation">Accumulation</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="accumulation_desc">-</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('total')">
+          <div id="sTotal" class="text-2xl font-bold text-purple-700">-</div>
+          <div class="text-sm font-medium text-gray-200 mt-1" data-i18n="total">Total</div>
+          <div class="text-xs text-gray-400 mt-0.5" data-i18n="total_desc">-</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PAGE: TOOLS ══════════ -->
+    <section id="page-tools" class="page space-y-6">
+      <h1 class="section-title" data-i18n="tools_title">Tool Analytics</h1>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('unique_tools')">
+          <div id="tUnique" class="text-2xl font-bold text-purple-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="unique_tools">Unique Tools</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('tool_calls_today')">
+          <div id="tCalls" class="text-2xl font-bold text-blue-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="tool_calls">Tool Calls</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('tokens_today')">
+          <div id="tTotalTokens" class="text-2xl font-bold text-green-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="total_tokens">Total Tokens</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('cache_read')">
+          <div id="tCacheRead" class="text-2xl font-bold text-orange-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cache_read">Cache Read</div>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="glass rounded-xl p-4 lg:col-span-2">
+          <h3 class="font-semibold mb-3 text-gray-200" data-i18n="tool_category_dist">Tool Category Distribution</h3>
+          <div id="toolCatChart" class="h-64"></div>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <h3 class="font-semibold mb-3 text-gray-200" data-i18n="top_tools">Top Tools</h3>
+          <div id="topToolsList" class="space-y-2 max-h-64 overflow-y-auto text-sm"></div>
+        </div>
+      </div>
+
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="stop_reasons">Stop Reasons</h3>
+        <div id="stopReasonsChart" class="h-48"></div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('input_tokens')">
+          <div id="tInputTok" class="text-xl font-bold text-indigo-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="input_tokens">Input Tokens</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('output_tokens')">
+          <div id="tOutputTok" class="text-xl font-bold text-blue-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="output_tokens">Output Tokens</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('cache_hit_rate')">
+          <div id="tCacheHitPct" class="text-xl font-bold text-cyan-400">0%</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cache_hit_rate">Cache Hit Rate</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('tool_error_rate')">
+          <div id="tErrRate" class="text-xl font-bold text-red-400">0%</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="tool_error_rate">Tool Error Rate</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PAGE: AUTOMATION ══════════ -->
+    <section id="page-automation" class="page space-y-6">
+      <h1 class="section-title" data-i18n="automation_title">Automation & Cron</h1>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('cron_jobs_total')">
+          <div id="aCronTotal" class="text-2xl font-bold text-purple-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_jobs_total">Jobs Total</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('cron_jobs_enabled')">
+          <div id="aCronEnabled" class="text-2xl font-bold text-green-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_jobs_enabled">Jobs Enabled</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('cron_today')">
+          <div id="aCronRuns" class="text-2xl font-bold text-blue-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_runs">Runs Today</div>
+        </div>
+        <div class="glass rounded-xl p-4 metric-card" onclick="showScoreModal('cron_success')">
+          <div id="aCronSuccess" class="text-2xl font-bold text-teal-600">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_success">Success Today</div>
+        </div>
+      </div>
+
+      <!-- Automation score card -->
+      <div class="glass rounded-xl p-5 metric-card" onclick="showScoreModal('automation')">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-gray-400 mb-1" data-i18n="automation">Automation Score</div>
+            <div id="aAutoScore" class="text-4xl font-bold text-green-400">-</div>
+            <div class="text-xs text-gray-400 mt-2" data-i18n="automation_desc">-</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-gray-400 mb-1" data-i18n="cron_success_rate">Success Rate</div>
+            <div id="aCronRate" class="text-3xl font-bold text-indigo-500">-</div>
+            <div class="text-sm text-gray-400 mt-2" data-i18n="avg_duration">Avg Duration</div>
+            <div id="aAvgDur" class="text-lg font-semibold text-gray-200">-</div>
+          </div>
+        </div>
+        <div class="mt-3 text-xs text-indigo-400" data-i18n="click_for_detail">Click for details</div>
+      </div>
+
+      <!-- Recent errors -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="recent_errors">Recent Cron Errors</h3>
+        <div id="aErrorList" class="space-y-2 text-sm">
+          <div class="text-gray-400" data-i18n="no_errors">No errors</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PAGE: AGENTS ══════════ -->
+    <section id="page-agents" class="page space-y-6">
+      <h1 class="section-title" data-i18n="agents_title">Agents Overview</h1>
+
+      <!-- Summary -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass rounded-xl p-4">
+          <div id="agTotal" class="text-2xl font-bold text-purple-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="total_agents">Total Agents</div>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <div id="agActive" class="text-2xl font-bold text-green-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="active_agents">Active</div>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <div id="agCronTotal" class="text-2xl font-bold text-blue-400">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_jobs_total">Cron Jobs</div>
+        </div>
+        <div class="glass rounded-xl p-4">
+          <div id="agCronEnabled" class="text-2xl font-bold text-teal-600">0</div>
+          <div class="text-xs text-gray-400 mt-1" data-i18n="cron_jobs_enabled">Enabled</div>
+        </div>
+      </div>
+
+      <!-- Agent ranking table -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="agent_ranking">Agent Ranking (by score)</h3>
+        <div id="agentRankList" class="space-y-2 text-sm"></div>
+      </div>
+
+      <!-- Collaboration graph -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="collab_graph">Collaboration Graph</h3>
+        <div id="collabChart" class="h-72"></div>
+      </div>
+
+      <!-- Shared workspace stats -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="shared_workspace">Shared Workspace</h3>
+        <div id="sharedStats" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 text-sm"></div>
+      </div>
+    </section>
+
+    <!-- ══════════ PAGE: GROWTH ══════════ -->
+    <section id="page-growth" class="page space-y-6">
+      <h1 class="section-title" data-i18n="growth_title">Growth & Progress</h1>
+
+      <!-- XP breakdown -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="xp_breakdown">XP Breakdown</h3>
+        <div id="xpBreakdownList" class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm"></div>
+      </div>
+
+      <!-- Historical line chart -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="history_7d">7-Day Growth History</h3>
+        <div id="historyChart" class="h-80"></div>
+      </div>
+
+      <!-- Level progress -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="level_progress">Level Progress</h3>
+        <div class="flex items-center gap-4">
+          <div class="text-center">
+            <div id="gLevel" class="text-4xl font-bold text-purple-400">1</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="level">Level</div>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between text-xs text-gray-400 mb-1">
+              <span id="gXp">0</span>
+              <span id="gNextXp">100</span>
+            </div>
+            <div class="bg-gray-200 rounded-full h-3">
+              <div id="gXpBar" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-3 rounded-full"
+                   style="width:0%"></div>
+            </div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="stage">Stage: <span id="gStage">-</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PAGE: WORKSPACE ══════════ -->
+    <section id="page-workspace" class="page space-y-6">
+      <h1 class="section-title" data-i18n="workspace_title">Workspace</h1>
+
+      <!-- Section 1: Knowledge accumulation -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="knowledge_accum">Knowledge Accumulation</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div class="metric-card rounded-lg bg-indigo-500/10 p-3" onclick="showScoreModal('skills_count')">
+            <div id="wSkills" class="text-xl font-bold text-indigo-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="skills_count">Skills</div>
+          </div>
+          <div class="metric-card rounded-lg bg-pink-500/10 p-3" onclick="showScoreModal('memories_count')">
+            <div id="wMemories" class="text-xl font-bold text-pink-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="memories_count">Diaries</div>
+          </div>
+          <div class="metric-card rounded-lg bg-blue-500/10 p-3" onclick="showScoreModal('memories_words')">
+            <div id="wMemWords" class="text-xl font-bold text-blue-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="memories_words">Memory Words</div>
+          </div>
+          <div class="metric-card rounded-lg bg-green-500/10 p-3" onclick="showScoreModal('learnings_count')">
+            <div id="wLearnings" class="text-xl font-bold text-green-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="learnings_count">Learnings</div>
+          </div>
+          <div class="metric-card rounded-lg bg-yellow-500/10 p-3" onclick="showScoreModal('memory_sections')">
+            <div id="wMemSections" class="text-xl font-bold text-yellow-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="memory_sections">Memory Sections</div>
+          </div>
+          <div class="metric-card rounded-lg bg-orange-500/10 p-3" onclick="showScoreModal('memory_words')">
+            <div id="wMemoryWords" class="text-xl font-bold text-orange-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="memory_words">Memory Words</div>
+          </div>
+          <div class="metric-card rounded-lg bg-red-500/10 p-3" onclick="showScoreModal('feature_requests')">
+            <div id="wFeatReq" class="text-xl font-bold text-red-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="feature_requests">Feature Requests</div>
+          </div>
+          <div class="metric-card rounded-lg bg-purple-500/10 p-3" onclick="showScoreModal('errors_count')">
+            <div id="wErrors" class="text-xl font-bold text-purple-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="errors_count">Error Records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Recent activity -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="recent_activity">Recent Activity</h3>
+        <div class="flex flex-wrap gap-3 items-center mb-4">
+          <div id="memoryBadge" class="badge badge-no" data-i18n="has_today_memory">Today Memory</div>
+          <div class="text-sm text-gray-300">
+            <span data-i18n="recent_memory_7d">7-day diaries: </span>
+            <span id="wRecentMemory" class="font-bold">0</span>
+          </div>
+          <div class="text-sm text-gray-300">
+            <span data-i18n="recent_learning_words">Recent learning words: </span>
+            <span id="wRecentLWords" class="font-bold">0</span>
+          </div>
+          <div class="text-sm text-gray-300">
+            <span data-i18n="recent_feature_req">Recent feature requests: </span>
+            <span id="wRecentFeat" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Tools & health -->
+      <div class="glass rounded-xl p-4">
+        <h3 class="font-semibold mb-3 text-gray-200" data-i18n="tools_health">Tools &amp; Health</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm mb-4">
+          <div class="rounded-lg bg-indigo-500/10 p-3">
+            <div id="wToolsInstalled" class="text-xl font-bold text-indigo-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="tools_installed">Installed Skills</div>
+          </div>
+          <div class="rounded-lg bg-cyan-500/10 p-3">
+            <div id="wToolsInteg" class="text-xl font-bold text-cyan-400">0</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="tools_integrations">Integrations</div>
+          </div>
+          <div class="rounded-lg bg-yellow-500/10 p-3">
+            <div id="wToolsUpdated" class="text-xl font-bold text-yellow-400">0d</div>
+            <div class="text-xs text-gray-400 mt-1" data-i18n="tools_updated_days">TOOLS.md Updated</div>
+          </div>
+        </div>
+        <!-- Workspace completeness -->
+        <div class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide"
+             data-i18n="workspace_completeness">Workspace Completeness</div>
+        <div id="completenessRow" class="flex flex-wrap gap-2"></div>
+      </div>
+    </section>
+
+    <!-- ══════════ PAGE: SETTINGS ══════════ -->
+    <section id="page-settings" class="page space-y-6">
+      <h1 class="section-title" data-i18n="settings_title">Settings</h1>
+
+      <div class="glass rounded-xl p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="font-medium" data-i18n="language">Language</span>
+          <div class="flex gap-2">
+            <button id="btnZh" onclick="setLang('zh')"
+              class="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">中文</button>
+            <button id="btnEn" onclick="setLang('en')"
+              class="px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 text-gray-300 hover:bg-white/20 transition">English</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="font-medium" data-i18n="agent_id">Agent ID</span>
+          <div class="flex gap-2">
+            <input id="settingsAgentInput" type="text" value="coding-assistant"
+              class="border rounded-lg px-3 py-2 text-sm w-48 outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="agent-id" />
+            <button onclick="switchAgent(document.getElementById('settingsAgentInput').value)"
+              class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 transition"
+              data-i18n="switch">Switch</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="font-medium" data-i18n="refresh">Refresh</span>
+          <button onclick="loadData()"
+            class="px-4 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700 transition"
+            data-i18n="refresh_now">Refresh Now</button>
+        </div>
+
+        <div class="text-sm text-gray-300 space-y-1 pt-2 border-t border-white/5">
+          <div>API: <span id="apiBaseDisplay" class="font-mono text-xs">-</span></div>
+          <div id="lastUpdatedText" class="text-gray-400 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- Change Password -->
+      <div class="glass rounded-xl p-4 space-y-4">
+        <h3 class="font-semibold text-gray-200" data-i18n="change_password">Change Password</h3>
+        <form id="change-password-form" onsubmit="handleChangePassword(event)" class="space-y-3">
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" data-i18n="current_password">Current Password</label>
+            <input type="password" id="old-password" required class="w-full px-3 py-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" data-i18n="new_password">New Password</label>
+            <input type="password" id="new-password" required minlength="6" class="w-full px-3 py-2 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1" data-i18n="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm-password" required minlength="6" class="w-full px-3 py-2 rounded-lg text-sm">
+          </div>
+          <div id="password-error" class="text-red-400 text-sm hidden"></div>
+          <div id="password-success" class="text-green-400 text-sm hidden"></div>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 transition"
+                  data-i18n="save_password">Save Password</button>
+        </form>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═════════════════════════════════════════════════════════════ -->
+<script>
+// ─── Constants ───────────────────────────────────────────────
+// API_BASE: Auto-detect from current URL, or use env config, or fallback to localhost
+// For production: set window.CLAWGROWTH_API_BASE before this script, or use same-origin deployment
+const API_BASE = (() => {
+  // 1. Check for explicit config (can be set via config.js or inline script)
+  if (typeof window.CLAWGROWTH_API_BASE !== 'undefined' && window.CLAWGROWTH_API_BASE) {
+    return window.CLAWGROWTH_API_BASE.replace(/\/$/, '');
+  }
+  // 2. Use same origin (works when frontend is served by backend or proxied)
+  return window.location.origin;
+})();
+const REFRESH_INTERVAL_MS = 60000;
+const TOKEN_KEY = 'clawgrowth_token';
+
+// ─── Backend Status Check ────────────────────────────────────
+let backendOnline = false;
+
+async function checkBackendStatus() {
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  const btn = document.getElementById('login-btn');
+  const lang = localStorage.getItem('clawgrowth_lang') || 'zh';
+  
+  try {
+    const resp = await fetch(`${API_BASE}/health`, { 
+      method: 'GET',
+      signal: AbortSignal.timeout(5000)
+    });
+    const data = await resp.json();
+    
+    if (data.ok) {
+      backendOnline = true;
+      dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+      text.className = 'text-emerald-400';
+      text.textContent = lang === 'zh' ? '✓ 后端服务已连接' : '✓ Backend connected';
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+      throw new Error('Health check failed');
+    }
+  } catch (e) {
+    backendOnline = false;
+    dot.className = 'w-2 h-2 rounded-full bg-red-500 animate-pulse';
+    text.className = 'text-red-400';
+    text.textContent = lang === 'zh' ? '✗ 无法连接后端服务' : '✗ Backend unavailable';
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+    
+    // Retry after 5 seconds
+    setTimeout(checkBackendStatus, 5000);
+  }
+}
+
+// ─── Authentication ──────────────────────────────────────────
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function setToken(token) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+function authHeaders() {
+  const token = getToken();
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+async function checkAuth() {
+  const token = getToken();
+  if (!token) return false;
+  
+  try {
+    const resp = await fetch(`${API_BASE}/api/auth/check`, {
+      headers: authHeaders()
+    });
+    const data = await resp.json();
+    return data.authenticated === true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  const password = document.getElementById('login-password').value;
+  const errorEl = document.getElementById('login-error');
+  const btnEl = document.getElementById('login-btn');
+  
+  errorEl.classList.add('hidden');
+  btnEl.disabled = true;
+  btnEl.textContent = 'Logging in...';
+  
+  try {
+    const resp = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    
+    const data = await resp.json();
+    
+    if (resp.ok && data.ok) {
+      setToken(data.token);
+      document.getElementById('login-page').classList.add('hidden');
+      document.getElementById('main-app').classList.remove('hidden');
+      loadData();
+    } else {
+      errorEl.textContent = data.detail || 'Login failed';
+      errorEl.classList.remove('hidden');
+    }
+  } catch (e) {
+    const lang = localStorage.getItem('clawgrowth_lang') || 'zh';
+    errorEl.textContent = lang === 'zh' 
+      ? '无法连接后端服务，请检查后端是否启动' 
+      : 'Cannot connect to backend, please check if backend is running';
+    errorEl.classList.remove('hidden');
+    // Re-check backend status
+    checkBackendStatus();
+  }
+  
+  btnEl.disabled = false;
+  btnEl.textContent = 'Login';
+}
+
+async function handleLogout() {
+  try {
+    await fetch(`${API_BASE}/api/auth/logout`, {
+      method: 'POST',
+      headers: authHeaders()
+    });
+  } catch (e) {}
+  
+  clearToken();
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+  document.getElementById('login-password').value = '';
+}
+
+async function handleChangePassword(event) {
+  event.preventDefault();
+  const oldPwd = document.getElementById('old-password').value;
+  const newPwd = document.getElementById('new-password').value;
+  const confirmPwd = document.getElementById('confirm-password').value;
+  const errorEl = document.getElementById('password-error');
+  const successEl = document.getElementById('password-success');
+  
+  errorEl.classList.add('hidden');
+  successEl.classList.add('hidden');
+  
+  if (newPwd !== confirmPwd) {
+    errorEl.textContent = lang === 'zh' ? '两次密码不一致' : 'Passwords do not match';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  
+  try {
+    const resp = await fetch(`${API_BASE}/api/auth/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ old_password: oldPwd, new_password: newPwd })
+    });
+    
+    const data = await resp.json();
+    
+    if (resp.ok && data.ok) {
+      successEl.textContent = lang === 'zh' ? '密码修改成功' : 'Password changed successfully';
+      successEl.classList.remove('hidden');
+      document.getElementById('old-password').value = '';
+      document.getElementById('new-password').value = '';
+      document.getElementById('confirm-password').value = '';
+    } else {
+      errorEl.textContent = data.detail || 'Failed to change password';
+      errorEl.classList.remove('hidden');
+    }
+  } catch (e) {
+    errorEl.textContent = 'Network error';
+    errorEl.classList.remove('hidden');
+  }
+}
+
+// ─── Claw color thresholds
+const CRAYFISH_COLORS = [
+  { key: 'red',    hex: '#E84B3A', dark: '#b83426', minScore: 80 },
+  { key: 'orange', hex: '#F5A623', dark: '#c07d10', minScore: 60 },
+  { key: 'teal',   hex: '#4DB8A4', dark: '#328c7a', minScore: 40 },
+  { key: 'blue',   hex: '#5B9BD5', dark: '#3a6fa0', minScore: 20 },
+  { key: 'purple', hex: '#9B5DE5', dark: '#6d38b0', minScore:  0 },
+];
+
+// ─── i18n dictionary ─────────────────────────────────────────
+const I18N = {
+  zh: {
+    // nav
+    home: '概览', tools: '工具', automation: '自动化', agents: 'Agents',
+    growth: '成长', workspace: '工作空间', settings: '设置',
+    // page titles
+    home_title: '今日概览', tools_title: '工具分析',
+    automation_title: '自动化与定时任务', agents_title: '多Agent概览',
+    growth_title: '成长与进度', workspace_title: '工作空间', settings_title: '设置',
+    // status
+    energy: '能量', health: '健康', mood: '心情', hunger: '饥饿',
+    // scores
+    efficiency: '效率', output: '产出', automation: '自动化',
+    collaboration: '协作', accumulation: '积累', total: '综合',
+    // metrics
+    tool_calls: '工具调用', conversations: '对话轮次',
+    input_tokens: '输入Token', output_tokens: '输出Token',
+    total_tokens: '总Token', cache_read: '缓存读取',
+    cron_runs: 'Cron执行', cron_success: 'Cron成功',
+    collaborations: '协作次数', unique_tools: '工具种类',
+    token_efficiency: 'Token效率', cache_hit_rate: '缓存命中率',
+    cron_success_rate: 'Cron成功率', tool_error_rate: '工具错误率',
+    tool_diversity: '工具多样性', context_usage: '上下文使用率',
+    skills_count: '技能数量', memories_count: '记忆数量',
+    memories_words: '记忆字数', has_today_memory: '今日记忆',
+    learnings_count: '学习记录', errors_count: '错误记录',
+    feature_requests: '功能请求', memory_sections: 'MEMORY章节',
+    memory_words: 'MEMORY字数', tools_installed: '已安装技能',
+    tools_integrations: '外部集成', tools_updated_days: 'TOOLS.md更新',
+    avg_duration: '平均时长',
+    // cron
+    cron_jobs_total: 'Cron任务总数', cron_jobs_enabled: '已启用',
+    // agents page
+    total_agents: '总Agent数', active_agents: '今日活跃',
+    agent_ranking: 'Agent排名 (按分数)', collab_graph: '协作关系图',
+    shared_workspace: '共享工作空间',
+    // xp
+    xp: '经验值', xp_breakdown: 'XP分项来源',
+    xp_from_conversations: '对话得分', xp_from_tools: '工具调用得分',
+    xp_from_cron: 'Cron成功得分', xp_from_collab: '协作得分',
+    xp_from_skills: '技能得分', xp_from_memory: '今日记忆得分', xp_from_learnings: '学习记录得分',
+    // shared workspace
+    heartbeat: '心跳', last_task: '最后任务', projects_active: '活跃项目',
+    tasks_blocked: '阻塞任务', tasks_overdue: '逾期任务',
+    decisions: '决策记录', reports: '报告', collections: '收藏',
+    // workspace
+    knowledge_accum: '知识积累', recent_activity: '近期动态',
+    tools_health: '工具与健康', workspace_completeness: '工作空间完整性',
+    recent_memory_7d: '7日记忆：', recent_learning_words: '近期学习字数：',
+    recent_feature_req: '近期功能请求：',
+    // misc
+    level: '等级', stage: '阶段', color: '颜色',
+    data_source: '数据来源', formula: '计算公式', breakdown: '分项得分',
+    click_for_detail: '点击查看详情',
+    five_dimensions: '五维能力',
+    tool_distribution: '工具分布',
+    derived_metrics: '衍生指标',
+    tool_category_dist: '工具类别分布',
+    top_tools: '高频工具',
+    stop_reasons: '停止原因',
+    history_7d: '7日成长历史',
+    level_progress: '等级进度',
+    loading: '加载中...', no_errors: '暂无错误',
+    recent_errors: '近期Cron错误',
+    language: '语言', agent_id: 'Agent ID',
+    refresh: '刷新', refresh_now: '立即刷新', switch: '切换',
+    // auth
+    change_password: '修改密码', current_password: '当前密码',
+    new_password: '新密码', confirm_password: '确认密码',
+    save_password: '保存密码', session: '会话', logout: '退出登录',
+    // stage names
+    stage_baby: '幼苗', stage_growing: '成长', stage_mature: '成熟',
+    stage_expert: '专家', stage_legend: '传说',
+    // color names
+    color_red: '红色战将', color_orange: '橙色精英',
+    color_teal: '青绿达人', color_blue: '蓝色学徒', color_purple: '紫色新星',
+    // status descriptions
+    energy_desc: '当前Session上下文剩余容量和活跃度',
+    health_desc: 'Cron任务执行质量和工具调用健康度',
+    mood_desc: '交互质量、活跃度和输出丰富程度',
+    hunger_desc: '知识积累速度和学习广度深度',
+    // score descriptions
+    efficiency_desc: 'Token使用效率、缓存命中率和响应速度',
+    output_desc: '每日输出Token量、工具调用量和对话轮次',
+    automation_desc: 'Cron任务执行量和成功率',
+    collaboration_desc: '子Agent协作次数、多样性和成功率',
+    accumulation_desc: '技能数量、记忆、学习记录和长期记忆积累',
+    total_desc: '五维评分综合加权计算',
+    memories_words_desc: '记忆文件字数统计',
+    memory_words_desc: 'MEMORY.md 文件字数',
+  },
+  en: {
+    home: 'Home', tools: 'Tools', automation: 'Automation', agents: 'Agents',
+    growth: 'Growth', workspace: 'Workspace', settings: 'Settings',
+    home_title: "Today's Overview", tools_title: 'Tool Analytics',
+    automation_title: 'Automation & Cron', agents_title: 'Agents Overview',
+    growth_title: 'Growth & Progress', workspace_title: 'Workspace', settings_title: 'Settings',
+    energy: 'Energy', health: 'Health', mood: 'Mood', hunger: 'Hunger',
+    efficiency: 'Efficiency', output: 'Output', automation: 'Automation',
+    collaboration: 'Collaboration', accumulation: 'Accumulation', total: 'Total',
+    tool_calls: 'Tool Calls', conversations: 'Conversations',
+    input_tokens: 'Input Tokens', output_tokens: 'Output Tokens',
+    total_tokens: 'Total Tokens', cache_read: 'Cache Read',
+    cron_runs: 'Cron Runs', cron_success: 'Cron Success',
+    collaborations: 'Collaborations', unique_tools: 'Unique Tools',
+    token_efficiency: 'Token Efficiency', cache_hit_rate: 'Cache Hit Rate',
+    cron_success_rate: 'Cron Success Rate', tool_error_rate: 'Tool Error Rate',
+    tool_diversity: 'Tool Diversity', context_usage: 'Context Usage',
+    skills_count: 'Skills', memories_count: 'Diaries',
+    memories_words: 'Memory Words', has_today_memory: "Today's Memory",
+    learnings_count: 'Learnings', errors_count: 'Error Records',
+    feature_requests: 'Feature Requests', memory_sections: 'Memory Sections',
+    memory_words: 'Memory Words', tools_installed: 'Installed Skills',
+    tools_integrations: 'Integrations', tools_updated_days: 'TOOLS.md Updated',
+    avg_duration: 'Avg Duration',
+    cron_jobs_total: 'Cron Jobs Total', cron_jobs_enabled: 'Jobs Enabled',
+    total_agents: 'Total Agents', active_agents: 'Active',
+    agent_ranking: 'Agent Ranking (by score)', collab_graph: 'Collaboration Graph',
+    shared_workspace: 'Shared Workspace',
+    xp: 'XP', xp_breakdown: 'XP Breakdown',
+    xp_from_conversations: 'Conversations XP', xp_from_tools: 'Tools XP',
+    xp_from_cron: 'Cron XP', xp_from_collab: 'Collab XP',
+    xp_from_skills: 'Skills XP', xp_from_memory: 'Memory XP', xp_from_learnings: 'Learnings XP',
+    heartbeat: 'Heartbeat', last_task: 'Last Task', projects_active: 'Active Projects',
+    tasks_blocked: 'Blocked Tasks', tasks_overdue: 'Overdue Tasks',
+    decisions: 'Decisions', reports: 'Reports', collections: 'Collections',
+    knowledge_accum: 'Knowledge Accumulation', recent_activity: 'Recent Activity',
+    tools_health: 'Tools & Health', workspace_completeness: 'Workspace Completeness',
+    recent_memory_7d: '7-day diaries: ', recent_learning_words: 'Recent learning words: ',
+    recent_feature_req: 'Recent feature requests: ',
+    level: 'Level', stage: 'Stage', color: 'Color',
+    data_source: 'Data Source', formula: 'Formula', breakdown: 'Breakdown',
+    click_for_detail: 'Click for details',
+    five_dimensions: 'Five Dimensions',
+    tool_distribution: 'Tool Distribution',
+    derived_metrics: 'Derived Metrics',
+    tool_category_dist: 'Tool Category Distribution',
+    top_tools: 'Top Tools',
+    stop_reasons: 'Stop Reasons',
+    history_7d: '7-Day Growth History',
+    level_progress: 'Level Progress',
+    loading: 'Loading...', no_errors: 'No errors',
+    recent_errors: 'Recent Cron Errors',
+    language: 'Language', agent_id: 'Agent ID',
+    refresh: 'Refresh', refresh_now: 'Refresh Now', switch: 'Switch',
+    change_password: 'Change Password', current_password: 'Current Password',
+    new_password: 'New Password', confirm_password: 'Confirm Password',
+    save_password: 'Save Password', session: 'Session', logout: 'Logout',
+    stage_baby: 'Baby', stage_growing: 'Growing', stage_mature: 'Mature',
+    stage_expert: 'Expert', stage_legend: 'Legend',
+    color_red: 'Red Warrior', color_orange: 'Orange Elite',
+    color_teal: 'Teal Master', color_blue: 'Blue Apprentice', color_purple: 'Purple Nova',
+    energy_desc: 'Current session context remaining capacity and activity',
+    health_desc: 'Cron execution quality and tool call health',
+    mood_desc: 'Interaction quality, activity level and output richness',
+    hunger_desc: 'Knowledge accumulation speed, learning depth and breadth',
+    efficiency_desc: 'Token usage efficiency, cache hit rate and response speed',
+    output_desc: 'Daily output tokens, tool calls and conversations',
+    automation_desc: 'Cron task execution volume and success rate',
+    collaboration_desc: 'Sub-agent collaboration count, diversity and success rate',
+    accumulation_desc: 'Skills, diaries, learnings and long-term memory accumulation',
+    total_desc: 'Weighted composite of all five dimensions',
+    memories_words_desc: 'Word count of memory files',
+    memory_words_desc: 'Word count of MEMORY.md file',
+  }
+};
+
+// ─── App state ───────────────────────────────────────────────
+let lang = localStorage.getItem('claw_lang') || 'zh';
+let currentAgentId = localStorage.getItem('claw_agent') || 'coding-assistant';
+let appData = {};   // { agent, agents, history }
+let chartInstances = {};
+
+// ─── i18n helpers ────────────────────────────────────────────
+function t(key) {
+  return (I18N[lang] && I18N[lang][key]) || I18N['en'][key] || key;
+}
+
+function applyI18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    // Preserve child elements (e.g. <span> inside label)
+    if (el.children.length === 0) {
+      el.textContent = t(key);
+    } else {
+      // Only update text nodes
+      for (const node of el.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+          node.textContent = t(key);
+        }
+      }
+    }
+  });
+  // Update lang toggle button label
+  document.getElementById('langToggle').textContent = lang === 'zh' ? 'EN' : '中文';
+  // Update language buttons in settings
+  document.getElementById('btnZh').className = lang === 'zh'
+    ? 'px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition'
+    : 'px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 text-gray-300 hover:bg-white/20 transition';
+  document.getElementById('btnEn').className = lang === 'en'
+    ? 'px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition'
+    : 'px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 text-gray-300 hover:bg-white/20 transition';
+  // Re-render charts to pick up new language labels
+  if (appData.agent) renderAllCharts();
+}
+
+function toggleLang() {
+  setLang(lang === 'zh' ? 'en' : 'zh');
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('claw_lang', lang);
+  applyI18n();
+}
+
+// ─── Page navigation ─────────────────────────────────────────
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Resize charts after layout change
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
+}
+
+// ─── Formatting helpers ───────────────────────────────────────
+function fmt(n) {
+  if (n === null || n === undefined) return '-';
+  return new Intl.NumberFormat(lang === 'zh' ? 'zh-CN' : 'en-US').format(Math.round(n));
+}
+function fmtDec(n, d = 1) {
+  if (n === null || n === undefined) return '-';
+  return Number(n).toFixed(d);
+}
+function pct(n) {
+  if (n === null || n === undefined) return '-';
+  return Math.round(n) + '%';
+}
+function fmtPct(n) {
+  // n is already a fraction (0-1) → multiply by 100
+  if (n === null || n === undefined) return '-';
+  return (n * 100).toFixed(1) + '%';
+}
+
+// ─── Crayfish color system ────────────────────────────────────
+function getClawColor(avgScore) {
+  for (const c of CRAYFISH_COLORS) {
+    if (avgScore >= c.minScore) return c;
+  }
+  return CRAYFISH_COLORS[CRAYFISH_COLORS.length - 1];
+}
+
+// Gradient palettes per score tier: [light, mid, dark] for body; [light, mid, dark] for claws
+const CLAW_GRAD_PALETTES = {
+  red:    { body: ['#FFD060','#F07030','#CC2010'], claw: ['#F08040','#DE3820','#A81808'] },
+  orange: { body: ['#FFE890','#F5A623','#C07D10'], claw: ['#FAB040','#E07018','#A04808'] },
+  teal:   { body: ['#80FFE0','#4DB8A4','#237A6A'], claw: ['#60E0C0','#2A9A80','#106050'] },
+  blue:   { body: ['#B0D8FF','#5B9BD5','#2A5FA0'], claw: ['#80C0FF','#3A80C0','#1A4880'] },
+  purple: { body: ['#E8C0FF','#9B5DE5','#6A2AAA'], claw: ['#C890F8','#8040D0','#501890'] },
+};
+
+function applyClawColor(avgScore) {
+  const c = getClawColor(avgScore);
+  const pal = CLAW_GRAD_PALETTES[c.key] || CLAW_GRAD_PALETTES.purple;
+
+  // Update radial gradient stops for body and claws
+  function setStops(gradId, colors) {
+    const g = document.getElementById(gradId);
+    if (!g) return;
+    const stops = g.querySelectorAll('stop');
+    colors.forEach((col, i) => { if (stops[i]) stops[i].setAttribute('stop-color', col); });
+  }
+  setStops('gBody',  pal.body);
+  setStops('gClawL', pal.claw);
+  setStops('gClawR', pal.claw);
+
+  const colorKey = 'color_' + c.key;
+  const badgeEl = document.getElementById('colorBadge');
+  if (badgeEl) {
+    badgeEl.style.background = c.hex;
+    badgeEl.textContent = t(colorKey);
+  }
+  // Update aura color
+  const aura = document.getElementById('aura');
+  if (aura) aura.style.background = c.hex + '44';
+}
+
+// ─── Claw expression animation ────────────────────────────────
+function getClawState(energy, hunger, mood, health) {
+  const avg = (energy + health + mood + hunger) / 4;
+  if (avg >= 85 && energy >= 65) return 'energetic';
+  if (avg >= 65) return 'happy';
+  if (energy < 15) return 'tired';
+  if (hunger < 20) return 'hungry';
+  if (health < 30) return 'sick';
+  return 'default';
+}
+
+function updateClawAnimation(state, mood) {
+  const wrap = document.getElementById('clawWrap');
+  const classMap = {
+    energetic: 'claw-energetic',
+    happy: 'claw-happy',
+    tired: 'claw-tired',
+    hungry: 'claw-hungry',
+    sick: 'claw-sick',
+    default: '',
+  };
+  wrap.className = 'absolute inset-0 flex items-center justify-center ' + (classMap[state] || '');
+
+  // Update mouth shape — face center x≈162, mouth baseline y≈197
+  const mouthEl  = document.getElementById('mouth');
+  const cavityEl = document.getElementById('mouthCavity');
+  if (mood >= 80) {
+    if (mouthEl)  mouthEl.setAttribute('d',  'M 130 193 Q 162 230 196 193');
+    if (cavityEl) cavityEl.setAttribute('d', 'M 132 198 Q 162 226 194 198 Q 184 238 162 240 Q 140 238 132 198 Z');
+  } else if (mood >= 60) {
+    if (mouthEl)  mouthEl.setAttribute('d',  'M 136 197 Q 162 222 190 197');
+    if (cavityEl) cavityEl.setAttribute('d', 'M 138 202 Q 162 218 188 202 Q 180 234 162 236 Q 144 234 138 202 Z');
+  } else if (mood >= 40) {
+    if (mouthEl)  mouthEl.setAttribute('d',  'M 140 210 L 184 210');
+    if (cavityEl) cavityEl.setAttribute('d', 'M 140 210 L 184 210 L 184 218 L 140 218 Z');
+  } else {
+    if (mouthEl)  mouthEl.setAttribute('d',  'M 136 220 Q 162 204 190 220');
+    if (cavityEl) cavityEl.setAttribute('d', 'M 138 216 Q 162 200 188 216 Q 176 212 162 210 Q 148 212 138 216 Z');
+  }
+
+  // Eye pupil size (base r=16, face in 500x520 space)
+  const eyeR = mood >= 70 ? 19 : mood >= 40 ? 16 : 12;
+  document.getElementById('eyeLeft').setAttribute('r', eyeR);
+  document.getElementById('eyeRight').setAttribute('r', eyeR);
+}
+
+// ─── Modal system ─────────────────────────────────────────────
+function openModal(title, bodyHtml) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modal-overlay').classList.remove('open');
+});
+
+function breakdownHtml(breakdown) {
+  if (!breakdown || (Array.isArray(breakdown) && breakdown.length === 0) || Object.keys(breakdown).length === 0) return '';
+  
+  // New format: array of {name, value, formula}
+  if (Array.isArray(breakdown)) {
+    const rows = breakdown.map(item =>
+      `<div class="py-1.5 border-b border-white/5 last:border-b-0">
+         <div class="flex justify-between">
+           <span class="text-gray-400">${item.name}</span>
+           <span class="font-semibold text-indigo-400">${fmtDec(item.value, 2)}</span>
+         </div>
+         ${item.formula ? `<div class="text-xs text-gray-500 mt-0.5 font-mono">${item.formula}</div>` : ''}
+       </div>`
+    ).join('');
+    return `<div class="border border-white/5 rounded-lg p-3 bg-white/5">
+      ${rows}
+    </div>`;
+  }
+  
+  // Old format: simple key-value object
+  const rows = Object.entries(breakdown).map(([k, v]) =>
+    `<div class="flex justify-between py-0.5">
+       <span class="text-gray-400">${k}</span>
+       <span class="font-semibold">${fmtDec(v, 2)}</span>
+     </div>`
+  ).join('');
+  return `<div class="border border-white/5 rounded-lg p-3 bg-white/5 divide-y divide-white/10">
+    ${rows}
+  </div>`;
+}
+
+function sourceDataHtml(sourceData) {
+  if (!sourceData || Object.keys(sourceData).length === 0) return '';
+  const rows = Object.entries(sourceData).map(([k, v]) => {
+    // Format large numbers with commas, decimals with 4 places
+    let formatted;
+    if (typeof v === 'number') {
+      if (Number.isInteger(v) || v > 100) {
+        formatted = fmt(v);
+      } else {
+        formatted = fmtDec(v, 4);
+      }
+    } else {
+      formatted = v;
+    }
+    return `<div class="flex justify-between py-0.5">
+       <span class="text-cyan-400">${k}</span>
+       <span class="font-mono text-gray-200">${formatted}</span>
+     </div>`;
+  }).join('');
+  return `<div class="border border-cyan-500/20 rounded-lg p-3 bg-cyan-500/5 divide-y divide-cyan-500/10">
+    ${rows}
+  </div>`;
+}
+
+// Show modal for score metrics (from agent.scores or agent.status)
+function showScoreModal(key) {
+  if (!appData.agent) return;
+  const agent = appData.agent;
+  const scores = agent.scores || {};
+  const status = agent.status || {};
+  const today = agent.today || {};
+  const derived = agent.derived || {};
+  const xpBreak = agent.xp_breakdown || {};
+
+  // Resolve metric config
+  let cfg = null;
+
+  // Scores
+  if (scores[key]) {
+    const s = scores[key];
+    cfg = {
+      name: t(key),
+      value: fmtDec(s.value, 1),
+      breakdown: s.breakdown,
+      source_data: s.source_data,
+      formula: lang === 'zh' ? (s.formula_zh || s.formula) : s.formula,
+      source: scoreSource(key),
+    };
+  }
+  // Status
+  else if (status[key]) {
+    const s = status[key];
+    cfg = {
+      name: t(key),
+      value: fmtDec(s.value, 1),
+      breakdown: s.breakdown,
+      source_data: s.source_data,
+      formula: lang === 'zh' ? (s.formula_zh || s.formula) : s.formula,
+      source: statusSource(key),
+    };
+  }
+  // Today raw metrics
+  else if (key === 'tool_calls_today') {
+    cfg = {
+      name: t('tool_calls'),
+      value: fmt(today.tool_calls),
+      breakdown: { input_tokens: today.input_tokens, output_tokens: today.output_tokens, cache_read: today.cache_read, tool_errors: today.tool_errors },
+      formula: null,
+      source: lang === 'zh' ? 'tool_call_logs/*.jsonl → tool_calls 计数' : 'tool_call_logs/*.jsonl → tool_calls count',
+    };
+  }
+  else if (key === 'tokens_today') {
+    cfg = {
+      name: t('total_tokens'),
+      value: fmt((today.input_tokens || 0) + (today.output_tokens || 0) + (today.cache_read || 0)),
+      breakdown: { input_tokens: today.input_tokens, output_tokens: today.output_tokens, cache_read: today.cache_read },
+      formula: 'input + output + cache_read',
+      source: lang === 'zh' ? 'sessions/*.jsonl → usage.*_tokens' : 'sessions/*.jsonl → usage.*_tokens',
+    };
+  }
+  else if (key === 'cron_today') {
+    cfg = {
+      name: t('cron_runs'),
+      value: fmt(today.cron_runs),
+      breakdown: { cron_runs: today.cron_runs, cron_success: today.cron_success, cron_error_count: today.cron_error_count },
+      formula: null,
+      source: lang === 'zh' ? 'cron_run_logs/*.jsonl → runs 计数' : 'cron_run_logs/*.jsonl → runs count',
+    };
+  }
+  else if (key === 'cron_success') {
+    cfg = {
+      name: t('cron_success'),
+      value: fmt(today.cron_success),
+      breakdown: { cron_runs: today.cron_runs, cron_success: today.cron_success },
+      formula: null,
+      source: lang === 'zh' ? 'cron_run_logs/*.jsonl → success 计数' : 'cron_run_logs/*.jsonl → success count',
+    };
+  }
+  else if (key === 'xp_today') {
+    // XP 使用与 scores 相同的结构：breakdown 数组 + source_data
+    cfg = {
+      name: t('xp'),
+      value: '+' + fmt(xpBreak.total),
+      source_data: xpBreak.source_data,
+      breakdown: xpBreak.breakdown,  // Array format, each item has name, value, formula
+      formula: lang === 'zh' ? (xpBreak.formula_zh || xpBreak.formula) : xpBreak.formula,
+      source: lang === 'zh' ? '各活动日志综合计算' : 'Aggregated from all activity logs',
+    };
+  }
+  // XP 分项详情
+  else if (key === 'xp_conversations') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_conversations') || {};
+    cfg = {
+      name: t('xp_from_conversations'),
+      value: '+' + fmt(xpBreak.from_conversations),
+      source_data: { conversations: src.conversations },
+      breakdown: [{ name: 'conversations', value: src.conversations, formula: item.formula }],
+      formula: lang === 'zh' ? '对话轮次 × 1 XP' : 'conversations × 1 XP',
+      source: lang === 'zh' ? 'sessions/*.jsonl → 独立 session 数' : 'sessions/*.jsonl → distinct session count',
+    };
+  }
+  else if (key === 'xp_tools') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_tools') || {};
+    cfg = {
+      name: t('xp_from_tools'),
+      value: '+' + fmt(xpBreak.from_tools),
+      source_data: { tool_calls: src.tool_calls },
+      breakdown: [{ name: 'tool_calls', value: src.tool_calls, formula: item.formula }],
+      formula: lang === 'zh' ? '工具调用次数 × 2 XP' : 'tool_calls × 2 XP',
+      source: lang === 'zh' ? 'tool_call_logs/*.jsonl → 调用计数' : 'tool_call_logs/*.jsonl → call count',
+    };
+  }
+  else if (key === 'xp_cron') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_cron_success') || {};
+    cfg = {
+      name: t('xp_from_cron'),
+      value: '+' + fmt(xpBreak.from_cron_success),
+      source_data: { cron_success: src.cron_success },
+      breakdown: [{ name: 'cron_success', value: src.cron_success, formula: item.formula }],
+      formula: lang === 'zh' ? 'Cron 成功次数 × 10 XP' : 'cron_success × 10 XP',
+      source: lang === 'zh' ? 'cron_run_logs/*.jsonl → status=ok 计数' : 'cron_run_logs/*.jsonl → status=ok count',
+    };
+  }
+  else if (key === 'xp_collab') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_collaborations') || {};
+    cfg = {
+      name: t('xp_from_collab'),
+      value: '+' + fmt(xpBreak.from_collaborations),
+      source_data: { collab_success: src.collab_success },
+      breakdown: [{ name: 'collab_success', value: src.collab_success, formula: item.formula }],
+      formula: lang === 'zh' ? '协作成功次数 × 20 XP' : 'collab_success × 20 XP',
+      source: lang === 'zh' ? 'sessions_send/sessions_spawn → 成功响应' : 'sessions_send/sessions_spawn → successful response',
+    };
+  }
+  else if (key === 'xp_skills') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_skills') || {};
+    cfg = {
+      name: t('xp_from_skills'),
+      value: '+' + fmt(xpBreak.from_skills),
+      source_data: { skills_count: src.skills_count, skills_above_base: src.skills_above_base },
+      breakdown: [{ name: 'skills_above_base', value: src.skills_above_base, formula: item.formula }],
+      formula: lang === 'zh' ? '(技能数 - 基础20) × 30 XP' : '(skills_count - 20) × 30 XP',
+      source: lang === 'zh' ? 'skills/ 目录技能数' : 'skills/ directory skill count',
+    };
+  }
+  else if (key === 'xp_memory') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_memory') || {};
+    cfg = {
+      name: t('xp_from_memory'),
+      value: '+' + fmt(xpBreak.from_memory),
+      source_data: { has_today_memory: src.has_today_memory },
+      breakdown: [{ name: 'has_today_memory', value: src.has_today_memory ? 1 : 0, formula: item.formula }],
+      formula: lang === 'zh' ? '今日有记忆 = +5 XP' : 'has_today_memory = +5 XP',
+      source: lang === 'zh' ? 'memory/ 目录今日文件' : 'memory/ directory today file',
+    };
+  }
+  else if (key === 'xp_learnings') {
+    const src = xpBreak.source_data || {};
+    const item = (xpBreak.breakdown || []).find(b => b.name === 'from_learnings') || {};
+    cfg = {
+      name: t('xp_from_learnings'),
+      value: '+' + fmt(xpBreak.from_learnings),
+      source_data: { learnings_count: src.learnings_count },
+      breakdown: [{ name: 'learnings_count', value: src.learnings_count, formula: item.formula }],
+      formula: lang === 'zh' ? '学习条目数 × 10 XP' : 'learnings_count × 10 XP',
+      source: lang === 'zh' ? '.learnings/ 目录条目数' : '.learnings/ directory entry count',
+    };
+  }
+  // Derived metrics
+  else if (key === 'token_efficiency') {
+    cfg = {
+      name: t('token_efficiency'),
+      value: fmtPct(derived.token_efficiency),
+      breakdown: { output_tokens: today.output_tokens, input_tokens: today.input_tokens },
+      formula: 'output_tokens / (input_tokens + output_tokens)',
+      source: lang === 'zh' ? 'sessions/*.jsonl → usage' : 'sessions/*.jsonl → usage',
+    };
+  }
+  else if (key === 'cache_hit_rate') {
+    cfg = {
+      name: t('cache_hit_rate'),
+      value: fmtPct(derived.cache_hit_rate),
+      breakdown: { cache_read: today.cache_read, input_tokens: today.input_tokens },
+      formula: 'cache_read / (input_tokens + cache_read)',
+      source: lang === 'zh' ? 'sessions/*.jsonl → cache_read_input_tokens' : 'sessions/*.jsonl → cache_read_input_tokens',
+    };
+  }
+  else if (key === 'tool_error_rate') {
+    cfg = {
+      name: t('tool_error_rate'),
+      value: fmtDec(derived.tool_error_rate, 1) + '%',
+      breakdown: { tool_errors: today.tool_errors, tool_calls: today.tool_calls },
+      formula: 'tool_errors / tool_calls × 100',
+      source: lang === 'zh' ? 'tool_call_logs/*.jsonl → is_error' : 'tool_call_logs/*.jsonl → is_error',
+    };
+  }
+  else if (key === 'tool_diversity') {
+    cfg = {
+      name: t('tool_diversity'),
+      value: fmtPct(derived.tool_diversity),
+      breakdown: { unique_tools: today.unique_tools, tool_calls: today.tool_calls },
+      formula: 'unique_tools / tool_calls',
+      source: lang === 'zh' ? 'tool_call_logs/*.jsonl → tool_name' : 'tool_call_logs/*.jsonl → tool_name',
+    };
+  }
+  else if (key === 'context_usage') {
+    cfg = {
+      name: t('context_usage'),
+      value: fmtDec(derived.context_usage, 1) + '%',
+      breakdown: { total_tokens: agent.session.total_tokens, context_tokens: agent.session.context_tokens },
+      formula: 'total_tokens / context_tokens × 100',
+      source: lang === 'zh' ? 'sessions/*.jsonl → context_tokens' : 'sessions/*.jsonl → context_tokens',
+    };
+  }
+  // Simple counters
+  else if (key === 'unique_tools') {
+    cfg = { name: t('unique_tools'), value: fmt(today.unique_tools), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'tool_call_logs → distinct tool_name' : 'tool_call_logs → distinct tool_name' };
+  }
+  else if (key === 'cache_read') {
+    cfg = { name: t('cache_read'), value: fmt(today.cache_read), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'sessions/*.jsonl → cache_read_input_tokens' : 'sessions/*.jsonl → cache_read_input_tokens' };
+  }
+  else if (key === 'input_tokens') {
+    cfg = { name: t('input_tokens'), value: fmt(today.input_tokens), breakdown: null, formula: null,
+      source: 'sessions/*.jsonl → input_tokens' };
+  }
+  else if (key === 'output_tokens') {
+    cfg = { name: t('output_tokens'), value: fmt(today.output_tokens), breakdown: null, formula: null,
+      source: 'sessions/*.jsonl → output_tokens' };
+  }
+  else if (key === 'cron_jobs_total') {
+    cfg = { name: t('cron_jobs_total'), value: fmt(agent.cron && agent.cron.jobs_total), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'crontab 配置文件' : 'crontab config files' };
+  }
+  else if (key === 'cron_jobs_enabled') {
+    cfg = { name: t('cron_jobs_enabled'), value: fmt(agent.cron && agent.cron.jobs_enabled), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'crontab 配置文件（已启用）' : 'crontab config files (enabled)' };
+  }
+  // Workspace metrics
+  else if (key === 'skills_count') {
+    cfg = { name: t('skills_count'), value: fmt(agent.workspace && agent.workspace.skills_count), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'skills/ 目录文件数' : 'skills/ directory file count' };
+  }
+  else if (key === 'memories_count') {
+    cfg = { name: t('memories_count'), value: fmt(agent.workspace && agent.workspace.memories_count), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'memory/ 目录文件数' : 'memory/ directory file count' };
+  }
+  else if (key === 'memories_words') {
+    cfg = { name: t('memories_words'), value: fmt(agent.workspace && agent.workspace.memories_words), breakdown: null, formula: null,
+      source: t('memories_words_desc') };
+  }
+  else if (key === 'learnings_count') {
+    cfg = { name: t('learnings_count'), value: fmt(agent.workspace && agent.workspace.learnings_count), breakdown: null, formula: null,
+      source: lang === 'zh' ? '.learnings/ 目录文件数' : '.learnings/ directory file count' };
+  }
+  else if (key === 'memory_sections') {
+    cfg = { name: t('memory_sections'), value: fmt(agent.workspace && agent.workspace.memory_sections), breakdown: null, formula: null,
+      source: lang === 'zh' ? 'MEMORY.md 章节数' : 'MEMORY.md section count' };
+  }
+  else if (key === 'memory_words') {
+    cfg = { name: t('memory_words'), value: fmt(agent.workspace && agent.workspace.memory_words), breakdown: null, formula: null,
+      source: t('memory_words_desc') };
+  }
+  else if (key === 'feature_requests') {
+    cfg = { name: t('feature_requests'), value: fmt(agent.workspace && agent.workspace.feature_requests_count), breakdown: null, formula: null,
+      source: lang === 'zh' ? '.openclaw/feature_requests/ 目录' : '.openclaw/feature_requests/ directory' };
+  }
+  else if (key === 'errors_count') {
+    cfg = { name: t('errors_count'), value: fmt(agent.workspace && agent.workspace.errors_count), breakdown: null, formula: null,
+      source: lang === 'zh' ? '.openclaw/errors/ 目录' : '.openclaw/errors/ directory' };
+  }
+  else {
+    cfg = { name: key, value: '-', breakdown: null, formula: null, source: '' };
+  }
+
+  const body = `
+    <div class="bg-indigo-500/10 rounded-lg p-3 text-center mb-2">
+      <div class="text-3xl font-bold text-indigo-700">${cfg.value}</div>
+    </div>
+    ${cfg.source_data ? `
+    <div class="mb-2">
+      <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">${lang === 'zh' ? '原始数据' : 'Source Data'}</div>
+      ${sourceDataHtml(cfg.source_data)}
+    </div>` : ''}
+    ${cfg.breakdown ? `
+    <div class="mb-2">
+      <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">${t('breakdown')}</div>
+      ${breakdownHtml(cfg.breakdown)}
+    </div>` : ''}
+    ${cfg.formula ? `
+    <div class="mb-2">
+      <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">${t('formula')}</div>
+      <div class="bg-white/5 rounded-lg p-2 font-mono text-xs text-gray-200 break-words">${cfg.formula}</div>
+    </div>` : ''}
+    ${cfg.source ? `
+    <div>
+      <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">${t('data_source')}</div>
+      <div class="text-xs text-gray-400">${cfg.source}</div>
+    </div>` : ''}
+  `;
+  openModal(cfg.name, body);
+}
+
+function showStatusModal(key) {
+  showScoreModal(key);
+}
+
+function scoreSource(key) {
+  const sources = {
+    efficiency:    'sessions/*.jsonl → usage, timing',
+    output:        'sessions/*.jsonl + tool_call_logs/*.jsonl',
+    automation:    'cron_run_logs/*.jsonl',
+    collaboration: 'task_logs/*.jsonl → sub_agent',
+    accumulation:  'skills/ + memory/ + .learnings/ + MEMORY.md',
+    total:         lang === 'zh' ? '五维加权综合' : 'Five-dimension weighted sum',
+  };
+  return sources[key] || '';
+}
+
+function statusSource(key) {
+  const sources = {
+    energy:  'sessions/*.jsonl → context_tokens, compaction',
+    health:  'cron_run_logs/*.jsonl + tool_call_logs/*.jsonl',
+    mood:    'sessions/*.jsonl + tool_call_logs/*.jsonl',
+    hunger:  '.learnings/ + memory/ → mtime, word count',
+  };
+  return sources[key] || '';
+}
+
+// ─── Data fetching ────────────────────────────────────────────
+async function fetchJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+async function loadData() {
+  const loading = document.getElementById('loadingBanner');
+  const error = document.getElementById('errorBanner');
+  loading.classList.remove('hidden');
+  error.classList.add('hidden');
+
+  try {
+    // Fetch agent detail, agents list, and history in parallel
+    // Load current agent and history first (fast), agents list loads async in background
+    const [agent, history] = await Promise.all([
+      fetchJson(`${API_BASE}/api/agent/${currentAgentId}`),
+      fetchJson(`${API_BASE}/api/agent/${currentAgentId}/history`).catch(() => ({ items: [] })),
+    ]);
+    
+    // Preserve previously loaded agents data
+    const prevAgents = appData.agents;
+    appData = { agent, agents: prevAgents, history };
+    
+    // agents 列表异步加载，不阻塞
+    fetchJson(`${API_BASE}/api/agents`).then(data => {
+      appData.agents = data;
+      populateAgentSelector();
+      // Re-render agents related sections (including shared workspace)
+      bindData();
+      renderAllCharts();
+    }).catch(() => {});
+
+    loading.classList.add('hidden');
+    bindData();
+    renderAllCharts();
+    populateAgentSelector();
+    updateLastUpdated(agent.updated_at);
+  } catch (e) {
+    loading.classList.add('hidden');
+    error.classList.remove('hidden');
+    error.textContent = 'API error: ' + e.message;
+    console.error(e);
+  }
+}
+
+function updateLastUpdated(ts) {
+  const el = document.getElementById('lastUpdatedText');
+  if (!el) return;
+  if (ts) {
+    const d = new Date(ts);
+    el.textContent = (lang === 'zh' ? '最后更新：' : 'Last updated: ') + d.toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US');
+  }
+}
+
+// ─── Bind data to DOM ─────────────────────────────────────────
+function bindData() {
+  if (!appData.agent) return;
+  const { agent, agents, history } = appData;
+  const today = agent.today || {};
+  const derived = agent.derived || {};
+  const session = agent.session || {};
+  const workspace = agent.workspace || {};
+  const scores = agent.scores || {};
+  const status = agent.status || {};
+  const cron = agent.cron || {};
+  const xpBreak = agent.xp_breakdown || {};
+
+  // ── Sidebar ──────────────────────────────────────────────
+  document.getElementById('level').textContent = agent.level || 1;
+  const stageKey = 'stage_' + (agent.stage || 'baby');
+  document.getElementById('stageText').textContent = t(stageKey);
+  document.getElementById('xp').textContent = fmt(agent.total_xp);
+  document.getElementById('nextXp').textContent = fmt(agent.next_level_xp);
+  const xpPct = agent.next_level_xp ? Math.min(100, (agent.total_xp / agent.next_level_xp) * 100) : 0;
+  document.getElementById('xpBar').style.width = xpPct + '%';
+
+  // Status bars
+  ['energy', 'health', 'mood', 'hunger'].forEach(k => {
+    const val = status[k] ? status[k].value : 0;
+    document.getElementById(k + 'Text').textContent = pct(val);
+    document.getElementById(k + 'Bar').style.width = pct(val);
+  });
+
+  // Claw color and animation
+  const totalScore = scores.total ? scores.total.value : 0;
+  applyClawColor(totalScore);
+  const energyVal = status.energy ? status.energy.value : 0;
+  const healthVal = status.health ? status.health.value : 0;
+  const moodVal   = status.mood   ? status.mood.value   : 0;
+  const hungerVal = status.hunger ? status.hunger.value : 0;
+  const cs = getClawState(energyVal, hungerVal, moodVal, healthVal);
+  updateClawAnimation(cs, moodVal);
+
+  // ── Home page ────────────────────────────────────────────
+  document.getElementById('hToolCalls').textContent = fmt(today.tool_calls);
+  const totalTok = (today.input_tokens || 0) + (today.output_tokens || 0) + (today.cache_read || 0);
+  document.getElementById('hTokens').textContent = fmt(totalTok);
+  document.getElementById('hCronRuns').textContent = fmt(today.cron_runs);
+  document.getElementById('hXpGained').textContent = '+' + fmt(xpBreak.total);
+
+  // Derived metrics
+  document.getElementById('dTokenEff').textContent = fmtPct(derived.token_efficiency);
+  document.getElementById('dCacheHit').textContent = fmtPct(derived.cache_hit_rate);
+  document.getElementById('dToolErr').textContent  = fmtDec(derived.tool_error_rate, 1) + '%';
+  document.getElementById('dDiversity').textContent = fmtPct(derived.tool_diversity);
+  document.getElementById('dContextUsage').textContent = fmtDec(derived.context_usage, 1) + '%';
+
+  // Score cards
+  const scoreMap = { efficiency: 'sEfficiency', output: 'sOutput', automation: 'sAutomation',
+                     collaboration: 'sCollab', accumulation: 'sAccum', total: 'sTotal' };
+  Object.entries(scoreMap).forEach(([k, id]) => {
+    document.getElementById(id).textContent = scores[k] ? fmtDec(scores[k].value, 1) : '-';
+  });
+
+  // ── Tools page ────────────────────────────────────────────
+  document.getElementById('tUnique').textContent = fmt(today.unique_tools);
+  document.getElementById('tCalls').textContent  = fmt(today.tool_calls);
+  document.getElementById('tTotalTokens').textContent = fmt(totalTok);
+  document.getElementById('tCacheRead').textContent   = fmt(today.cache_read);
+  document.getElementById('tInputTok').textContent    = fmt(today.input_tokens);
+  document.getElementById('tOutputTok').textContent   = fmt(today.output_tokens);
+  document.getElementById('tCacheHitPct').textContent = fmtPct(derived.cache_hit_rate);
+  document.getElementById('tErrRate').textContent     = fmtDec(derived.tool_error_rate, 1) + '%';
+
+  // Top tools list
+  const toolsData = agent.tools || {};
+  const topTools = toolsData.top_tools || [];
+  document.getElementById('topToolsList').innerHTML = topTools.length
+    ? topTools.map((x, i) => {
+        const name  = Array.isArray(x) ? x[0] : (x.name || 'Unknown');
+        const count = Array.isArray(x) ? x[1] : (x.count || 0);
+        const share = today.tool_calls ? ((count / today.tool_calls) * 100).toFixed(1) : 0;
+        return `<div class="flex justify-between items-center py-1.5 border-b border-white/5 last:border-0">
+          <div>
+            <span class="text-gray-400 text-xs mr-1">#${i+1}</span>
+            <span class="font-medium text-gray-100">${name}</span>
+          </div>
+          <div class="text-right">
+            <span class="font-semibold text-indigo-400">${fmt(count)}</span>
+            <span class="text-gray-400 text-xs ml-1">${share}%</span>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="text-gray-400 text-xs">${lang === 'zh' ? '暂无数据' : 'No data'}</div>`;
+
+  // ── Automation page ───────────────────────────────────────
+  document.getElementById('aCronTotal').textContent   = fmt(cron.jobs_total);
+  document.getElementById('aCronEnabled').textContent = fmt(cron.jobs_enabled);
+  document.getElementById('aCronRuns').textContent    = fmt(today.cron_runs);
+  document.getElementById('aCronSuccess').textContent = fmt(today.cron_success);
+  document.getElementById('aAutoScore').textContent   = scores.automation ? fmtDec(scores.automation.value, 1) : '-';
+  const cronRate = today.cron_runs ? ((today.cron_success / today.cron_runs) * 100).toFixed(1) + '%' : '-';
+  document.getElementById('aCronRate').textContent    = cronRate;
+  document.getElementById('aAvgDur').textContent = cron.avg_duration_ms
+    ? (cron.avg_duration_ms / 1000).toFixed(1) + 's'
+    : '-';
+  const errors = (cron.recent_errors || []);
+  document.getElementById('aErrorList').innerHTML = errors.length
+    ? errors.map(e => `<div class="bg-red-500/10 rounded-lg p-2 text-xs text-red-700">
+        <div class="font-medium">${e.error_message || e}</div>
+        <div class="text-gray-400 mt-0.5">${e.run_time || ''}</div>
+      </div>`).join('')
+    : `<div class="text-gray-400 text-sm">${t('no_errors')}</div>`;
+
+  // ── Agents page ───────────────────────────────────────────
+  if (agents) {
+    document.getElementById('agTotal').textContent      = fmt(agents.total);
+    document.getElementById('agActive').textContent     = fmt(agents.active);
+    document.getElementById('agCronTotal').textContent  = fmt(agents.cron_jobs_total);
+    document.getElementById('agCronEnabled').textContent = fmt(agents.cron_jobs_enabled);
+
+    const agentList = agents.agents || [];
+    const sorted = [...agentList].sort((a, b) => (b.total_score || 0) - (a.total_score || 0));
+    document.getElementById('agentRankList').innerHTML = sorted.length
+      ? sorted.map((a, i) => {
+          const color = a.color || '#9B5DE5';
+          return `<div class="agent-row flex items-center justify-between px-3 py-2 rounded-lg border border-white/5"
+                       onclick="switchAgent('${a.agent_id}')">
+            <div class="flex items-center gap-2">
+              <span class="text-gray-400 text-xs w-5">#${i+1}</span>
+              <span class="w-3 h-3 rounded-full inline-block" style="background:${color}"></span>
+              <span class="font-medium text-gray-100">${a.agent_id}</span>
+              <span class="text-xs text-gray-400">LV.${a.level || 1}</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs">
+              <div class="text-right">
+                <div class="font-bold text-purple-400">${fmtDec(a.total_score, 1)}</div>
+                <div class="text-gray-400">Score</div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold text-green-400">${pct(a.energy)}</div>
+                <div class="text-gray-400">${t('energy')}</div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold text-red-400">${pct(a.health)}</div>
+                <div class="text-gray-400">${t('health')}</div>
+              </div>
+            </div>
+          </div>`;
+        }).join('')
+      : `<div class="text-gray-400 text-sm">${lang === 'zh' ? '暂无Agent数据' : 'No agent data'}</div>`;
+
+    // Shared workspace
+    const shared = agents.shared || {};
+    const sharedFields = [
+      { key: 'heartbeat', val: shared.heartbeat_hours_ago != null ? (fmtDec(shared.heartbeat_hours_ago, 1) + (lang === 'zh' ? '小时前' : 'h ago')) : '-' },
+      { key: 'last_task', val: shared.last_task_hours_ago != null ? (fmtDec(shared.last_task_hours_ago, 1) + (lang === 'zh' ? '小时前' : 'h ago')) : '-' },
+      { key: 'projects_active', val: fmt(shared.projects_active_count) },
+      { key: 'tasks_blocked', val: fmt(shared.tasks_blocked) },
+      { key: 'tasks_overdue', val: fmt(shared.tasks_overdue) },
+      { key: 'decisions', val: fmt(shared.decisions_count) },
+      { key: 'reports', val: fmt(shared.reports_count) },
+      { key: 'collections', val: fmt(shared.collections_count) },
+    ];
+    document.getElementById('sharedStats').innerHTML = sharedFields.map(f => `
+      <div class="rounded-lg bg-white/5 p-3">
+        <div class="text-lg font-bold text-gray-100">${f.val}</div>
+        <div class="text-xs text-gray-400 mt-0.5">${t(f.key)}</div>
+      </div>`).join('');
+  }
+
+  // ── Growth page ───────────────────────────────────────────
+  document.getElementById('gLevel').textContent   = agent.level || 1;
+  document.getElementById('gXp').textContent      = fmt(agent.total_xp);
+  document.getElementById('gNextXp').textContent  = fmt(agent.next_level_xp);
+  document.getElementById('gXpBar').style.width   = xpPct + '%';
+  document.getElementById('gStage').textContent   = t(stageKey);
+
+  // XP breakdown - 每项可点击查看详情
+  const xpFields = [
+    { key: 'xp_from_conversations', val: xpBreak.from_conversations, modalKey: 'xp_conversations', bg: 'bg-indigo-500/10', text: 'text-indigo-400', hover: 'hover:bg-indigo-500/20' },
+    { key: 'xp_from_tools',         val: xpBreak.from_tools,         modalKey: 'xp_tools',         bg: 'bg-blue-500/10',   text: 'text-blue-400',   hover: 'hover:bg-blue-500/20' },
+    { key: 'xp_from_cron',          val: xpBreak.from_cron_success,  modalKey: 'xp_cron',          bg: 'bg-green-500/10',  text: 'text-green-400',  hover: 'hover:bg-green-500/20' },
+    { key: 'xp_from_collab',        val: xpBreak.from_collaborations, modalKey: 'xp_collab',       bg: 'bg-orange-500/10', text: 'text-orange-400', hover: 'hover:bg-orange-500/20' },
+    { key: 'xp_from_skills',        val: xpBreak.from_skills,        modalKey: 'xp_skills',        bg: 'bg-cyan-500/10',   text: 'text-cyan-400',   hover: 'hover:bg-cyan-500/20' },
+    { key: 'xp_from_memory',        val: xpBreak.from_memory,        modalKey: 'xp_memory',        bg: 'bg-pink-500/10',   text: 'text-pink-400',   hover: 'hover:bg-pink-500/20' },
+    { key: 'xp_from_learnings',     val: xpBreak.from_learnings,     modalKey: 'xp_learnings',     bg: 'bg-purple-500/10', text: 'text-purple-400', hover: 'hover:bg-purple-500/20' },
+  ];
+  document.getElementById('xpBreakdownList').innerHTML = xpFields.map(f => `
+    <div class="rounded-lg ${f.bg} p-3 metric-card cursor-pointer ${f.hover} transition-colors" 
+         onclick="showScoreModal('${f.modalKey}')">
+      <div class="text-xl font-bold ${f.text}">+${fmt(f.val)}</div>
+      <div class="text-xs text-gray-400 mt-1">${t(f.key)}</div>
+    </div>`).join('');
+
+  // ── Workspace page ────────────────────────────────────────
+  document.getElementById('wSkills').textContent      = fmt(workspace.skills_count);
+  document.getElementById('wMemories').textContent    = fmt(workspace.memories_count);
+  document.getElementById('wMemWords').textContent    = fmt(workspace.memories_words);
+  document.getElementById('wLearnings').textContent   = fmt(workspace.learnings_count);
+  document.getElementById('wMemSections').textContent = fmt(workspace.memory_sections);
+  document.getElementById('wMemoryWords').textContent = fmt(workspace.memory_words);
+  document.getElementById('wFeatReq').textContent     = fmt(workspace.feature_requests_count);
+  document.getElementById('wErrors').textContent      = fmt(workspace.errors_count);
+
+  // Recent activity
+  const hasMemory = workspace.has_today_memory;
+  const memoryBadge = document.getElementById('memoryBadge');
+  memoryBadge.textContent = hasMemory ? t('has_today_memory') + ' ✓' : t('has_today_memory') + ' ✗';
+  memoryBadge.className = 'badge ' + (hasMemory ? 'badge-ok' : 'badge-no');
+  document.getElementById('wRecentMemory').textContent  = fmt(workspace.recent_memory_count);
+  document.getElementById('wRecentLWords').textContent = fmt(workspace.recent_learning_words);
+  document.getElementById('wRecentFeat').textContent   = fmt(workspace.recent_feature_requests);
+
+  // Tools & health
+  document.getElementById('wToolsInstalled').textContent = fmt(workspace.tools_skills_installed);
+  document.getElementById('wToolsInteg').textContent     = fmt(workspace.tools_external_integrations);
+  document.getElementById('wToolsUpdated').textContent   =
+    workspace.tools_md_updated_days_ago != null ? workspace.tools_md_updated_days_ago + 'd' : '-';
+
+  // Completeness checklist
+  const completeness = workspace.workspace_completeness || {};
+  document.getElementById('completenessRow').innerHTML = Object.entries(completeness).map(([file, ok]) =>
+    `<span class="badge ${ok ? 'badge-ok' : 'badge-no'}">${file} ${ok ? '✓' : '✗'}</span>`
+  ).join('');
+
+  // ── Settings page ─────────────────────────────────────────
+  document.getElementById('settingsAgentInput').value = currentAgentId;
+  updateLastUpdated(agent.updated_at);
+}
+
+// ─── Agent selector ───────────────────────────────────────────
+function populateAgentSelector() {
+  if (!appData.agents) return;
+  const agentList = appData.agents.agents || [];
+  const sel = document.getElementById('agentSelect');
+  sel.innerHTML = agentList.length
+    ? agentList.map(a => `<option value="${a.agent_id}" ${a.agent_id === currentAgentId ? 'selected' : ''}>${a.agent_id}</option>`).join('')
+    : `<option value="${currentAgentId}">${currentAgentId}</option>`;
+}
+
+document.getElementById('agentSelect').addEventListener('change', e => {
+  switchAgent(e.target.value);
+});
+
+function switchAgent(id) {
+  if (!id || id === currentAgentId) return;
+  currentAgentId = id.trim();
+  localStorage.setItem('claw_agent', currentAgentId);
+  loadData();
+}
+
+// ─── Chart rendering ──────────────────────────────────────────
+function initChart(id) {
+  const dom = document.getElementById(id);
+  if (!dom) return null;
+  if (chartInstances[id]) { chartInstances[id].dispose(); delete chartInstances[id]; }
+  const inst = echarts.init(dom);
+  chartInstances[id] = inst;
+  return inst;
+}
+
+function renderAllCharts() {
+  if (!appData.agent || !window.echarts) return;
+  renderRadarChart();
+  renderPieChart();
+  renderToolCatChart();
+  renderStopReasonsChart();
+  renderCollabChart();
+  renderHistoryChart();
+}
+
+function renderRadarChart() {
+  const chart = initChart('radarChart');
+  if (!chart) return;
+  const scores = appData.agent.scores || {};
+  const dims = ['efficiency', 'output', 'automation', 'collaboration', 'accumulation'];
+  chart.setOption({
+    tooltip: { trigger: 'item' },
+    radar: {
+      indicator: dims.map(d => ({ name: t(d), max: 100 })),
+      splitArea: { areaStyle: { color: ['rgba(102,126,234,.05)', 'rgba(102,126,234,.1)'] } },
+      axisName: { color: '#6b7280', fontSize: 11 },
+    },
+    series: [{
+      type: 'radar',
+      data: [{
+        value: dims.map(d => scores[d] ? scores[d].value : 0),
+        name: t('total'),
+        areaStyle: { color: 'rgba(102,126,234,.25)' },
+        lineStyle: { color: '#667eea', width: 2 },
+        itemStyle: { color: '#667eea' },
+      }],
+    }],
+  });
+}
+
+function renderPieChart() {
+  const chart = initChart('pieChart');
+  if (!chart) return;
+  const toolsData = (appData.agent.tools || {}).by_category || {};
+  const entries = Object.entries(toolsData);
+  if (!entries.length) {
+    chart.setOption({ title: { text: lang === 'zh' ? '暂无数据' : 'No data', left: 'center', top: 'center', textStyle: { color: '#9ca3af' } }, series: [] });
+    return;
+  }
+  chart.setOption({
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { fontSize: 11, color: '#e2e8f0' } },
+    series: [{
+      type: 'pie', radius: ['38%', '70%'], center: ['40%', '50%'],
+      avoidLabelOverlap: false,
+      itemStyle: { borderRadius: 5, borderColor: '#fff', borderWidth: 2 },
+      label: { show: false },
+      emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold' } },
+      data: entries.map(([name, value]) => ({ name, value })),
+    }],
+  });
+}
+
+function renderToolCatChart() {
+  const chart = initChart('toolCatChart');
+  if (!chart) return;
+  const toolsData = (appData.agent.tools || {}).by_category || {};
+  const entries = Object.entries(toolsData);
+  chart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 60, right: 20, top: 20, bottom: 40 },
+    xAxis: { type: 'category', data: entries.map(e => e[0]), axisLabel: { color: '#9ca3af', fontSize: 11 } },
+    yAxis: { type: 'value', axisLabel: { color: '#9ca3af' } },
+    series: [{
+      type: 'bar', barMaxWidth: 48,
+      data: entries.map(e => e[1]),
+      itemStyle: { color: '#667eea', borderRadius: [4, 4, 0, 0] },
+    }],
+  });
+}
+
+function renderStopReasonsChart() {
+  const chart = initChart('stopReasonsChart');
+  if (!chart) return;
+  const stopReasons = (appData.agent.tools || {}).stop_reasons || {};
+  const entries = Object.entries(stopReasons);
+  chart.setOption({
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    legend: { bottom: 0, textStyle: { fontSize: 11, color: '#e2e8f0' } },
+    series: [{
+      type: 'pie', radius: ['35%', '65%'], center: ['50%', '42%'],
+      label: { fontSize: 11 },
+      data: entries.map(([name, value]) => ({ name, value })),
+      itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+    }],
+  });
+}
+
+function renderCollabChart() {
+  const chart = initChart('collabChart');
+  if (!chart) return;
+  const agents = appData.agents;
+  if (!agents) {
+    chart.setOption({ title: { text: lang === 'zh' ? '暂无协作数据' : 'No collaboration data', left: 'center', top: 'center', textStyle: { color: '#9ca3af' } }, series: [] });
+    return;
+  }
+  const collab = agents.collab_graph || {};
+  const nodeNames = collab.nodes || [];
+  const edges = collab.edges || [];
+  const agentList = agents.agents || [];
+
+  const nodeData = nodeNames.map(name => {
+    const a = agentList.find(x => x.agent_id === name) || {};
+    return {
+      name,
+      symbolSize: Math.max(20, Math.min(50, (a.total_score || 50) * 0.6)),
+      itemStyle: { color: a.color || '#9B5DE5' },
+      label: { fontSize: 10 },
+    };
+  });
+
+  chart.setOption({
+    tooltip: { formatter: p => p.data.name || '' },
+    series: [{
+      type: 'graph', layout: 'force', roam: true,
+      data: nodeData,
+      links: edges.map(e => ({
+        source: e.from, target: e.to,
+        lineStyle: { color: e.success ? '#22c55e' : '#ef4444', curveness: 0.2, width: 1.5 },
+      })),
+      label: { show: true, position: 'right', fontSize: 10, color: '#9ca3af' },
+      force: { repulsion: 120, edgeLength: 100 },
+    }],
+  });
+}
+
+function renderHistoryChart() {
+  const chart = initChart('historyChart');
+  if (!chart) return;
+  const items = (appData.history || {}).items || [];
+  const dates = items.map(x => x.date);
+  const dims = ['efficiency_score', 'output_score', 'automation_score', 'collaboration_score', 'accumulation_score', 'total_score'];
+  const labels = ['efficiency', 'output', 'automation', 'collaboration', 'accumulation', 'total'];
+  const colorArr = ['#667eea', '#5B9BD5', '#4DB8A4', '#F5A623', '#E84B3A', '#9B5DE5'];
+
+  // Find last data point for each series
+  const lastIdx = items.length - 1;
+  
+  chart.setOption({
+    tooltip: { trigger: 'axis' },
+    legend: { data: labels.map(l => t(l)), bottom: 0, textStyle: { fontSize: 11, color: '#e2e8f0' } },
+    grid: { left: 40, right: 50, top: 30, bottom: 60 },
+    xAxis: { type: 'category', data: dates, axisLabel: { rotate: 30, fontSize: 10, color: '#9ca3af' } },
+    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: '#9ca3af' } },
+    series: dims.map((dim, i) => ({
+      name: t(labels[i]),
+      type: 'line', smooth: true,
+      showSymbol: true,
+      symbol: 'circle',
+      symbolSize: (val, params) => params.dataIndex === lastIdx ? 8 : 0,
+      lineStyle: { width: 2, color: colorArr[i] },
+      itemStyle: { color: colorArr[i] },
+      data: items.map(x => x[dim] || null),
+      label: {
+        show: true,
+        position: 'right',
+        formatter: (params) => params.dataIndex === lastIdx ? params.value : '',
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: colorArr[i],
+      },
+      endLabel: {
+        show: true,
+        formatter: '{a}: {c}',
+        fontSize: 10,
+        color: colorArr[i],
+      },
+    })),
+  });
+}
+
+// ─── Window resize ─────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  Object.values(chartInstances).forEach(c => c && c.resize && c.resize());
+});
+
+// ─── Bootstrap ────────────────────────────────────────────────
+applyI18n();
+
+// Display current API endpoint
+document.getElementById('apiBaseDisplay').textContent = API_BASE;
+
+// Check authentication on load
+(async function initApp() {
+  const authenticated = await checkAuth();
+  if (authenticated) {
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    loadData();
+    setInterval(loadData, REFRESH_INTERVAL_MS);
+  } else {
+    document.getElementById('login-page').classList.remove('hidden');
+    document.getElementById('main-app').classList.add('hidden');
+    // Check backend status when showing login page
+    checkBackendStatus();
+  }
+})();
+</script>
+</body>
+</html>

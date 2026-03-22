@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+dev/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.db-wal
+*.db-shm
+
+# Config (contains password hash or custom settings)
+config.json
+backend/data/config.json
+frontend/config.js
+
+# IDE
+.claude/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.venv/
+venv/
+
+# Claude artifacts
+.claude/
+
+# Node modules (if any)
+node_modules/
+
+# Backup files
+*.bak
+*.backup

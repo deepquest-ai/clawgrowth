@@ -1,0 +1,4 @@
+{
+  "password_hash": "59c3bbeb2b1e52965d74bfef316638d06306c6ab7ffa7792f44f42e62b5020f7",
+  "_comment": "Default password: deepquest.cn | Generate hash: echo -n 'your_password' | sha256sum"
+}
